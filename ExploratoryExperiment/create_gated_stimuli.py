@@ -17,7 +17,7 @@ from pathlib import Path
 import numpy as np
 import soundfile as sf
 
-GATE_DURATIONS_MS = [100, 250, 500, 1000, 2000, 3000, 5000, 10000, 15000]
+GATE_DURATIONS_MS = [250, 500, 1000, 2000, 4000, 8000]
 AUDIO_EXTENSIONS = {".wav", ".flac", ".aiff", ".aif", ".ogg", ".mp3"}
 
 
