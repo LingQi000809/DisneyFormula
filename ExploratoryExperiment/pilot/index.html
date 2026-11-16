@@ -13,6 +13,10 @@
     </script>
     <script src="clips.js"></script>
     <style>
+        html {
+            font-size: clamp(16px, 0.85rem + 0.35vw, 19px);
+        }
+
          :root {
             --bg: #f4f4fa;
             --surface: #fff;
@@ -66,17 +70,17 @@
             margin: 0;
             background: var(--bg);
             color: var(--ink);
-            font: 16px/1.55 var(--f-body);
+            font: 1rem/1.55 var(--f-body);
         }
         
         .wrap {
-            max-width: 620px;
+            max-width: 38.75rem;
             margin: 0 auto;
-            padding: 28px 16px 64px;
+            padding: 1.75rem 1rem 4rem;
         }
         
         h2 {
-            font: 700 25px/1.15 var(--f-display);
+            font: 700 1.5625rem/1.15 var(--f-display);
             margin: 0;
             letter-spacing: -0.01em;
         }
@@ -86,7 +90,7 @@
         }
         
         .eyebrow {
-            font: 600 12px/1 var(--f-body);
+            font: 600 0.75rem/1 var(--f-body);
             letter-spacing: .09em;
             text-transform: uppercase;
             color: var(--gold);
@@ -104,27 +108,27 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
-            padding: 14px 24px;
+            gap: 0.75rem;
+            padding: 0.875rem 1.5rem;
             border-bottom: 1px solid var(--line);
         }
         
         .brand {
-            font: 700 15px var(--f-display);
+            font: 700 0.9375rem var(--f-display);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 0.5rem;
         }
         
         .brand i {
-            width: 9px;
-            height: 9px;
+            width: 0.5625rem;
+            height: 0.5625rem;
             border-radius: 50%;
             background: var(--gold);
         }
         
         .prog {
-            height: 5px;
+            height: 0.3125rem;
             background: var(--sunk);
             overflow: hidden;
         }
@@ -138,19 +142,19 @@
         }
         
         .screen {
-            padding: 30px 28px 28px;
+            padding: 1.875rem 1.75rem 1.75rem;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            min-height: 520px;
+            gap: 1.25rem;
+            min-height: 32.5rem;
         }
         
         @media (max-width: 480px) {
             .screen {
-                padding: 24px 18px;
+                padding: 1.5rem 1.125rem;
             }
             .top {
-                padding: 12px 18px;
+                padding: 0.75rem 1.125rem;
             }
         }
         
@@ -161,7 +165,7 @@
         
         .rules {
             display: grid;
-            gap: 18px;
+            gap: 1.125rem;
             margin: 0;
             padding: 0;
             list-style: none;
@@ -170,27 +174,27 @@
         
         .rules li {
             display: grid;
-            grid-template-columns: 26px 1fr;
-            gap: 12px;
-            font-size: 15px;
+            grid-template-columns: 1.625rem 1fr;
+            gap: 0.75rem;
+            font-size: 0.9375rem;
             color: var(--muted);
         }
         /* rule title: full-contrast ink, a touch larger; body text stays muted */
         
         .rules b {
-            margin-bottom: 3px;
-            font-size: 16px;
+            margin-bottom: 0.1875rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--ink);
         }
         
         .rules .k {
-            font: 600 12px/26px var(--f-body);
+            font: 600 0.75rem/1.625rem var(--f-body);
             color: var(--accent);
             background: var(--accent-soft);
             border-radius: 6px;
             text-align: center;
-            height: 26px;
+            height: 1.625rem;
         }
         
         .rules b {
@@ -201,17 +205,17 @@
             background: var(--prize-bg);
             border: 1px solid var(--prize-line);
             border-radius: 12px;
-            padding: 16px 18px;
+            padding: 1rem 1.125rem;
             display: grid;
-            grid-template-columns: 40px 1fr;
-            gap: 8px 14px;
+            grid-template-columns: 2.5rem 1fr;
+            gap: 0.5rem 0.875rem;
             line-height: 1.6;
         }
         
         .prize .ico {
             grid-row: span 3;
-            width: 40px;
-            height: 40px;
+            width: 2.5rem;
+            height: 2.5rem;
             border-radius: 50%;
             background: var(--prize-chip);
             color: var(--prize-ink);
@@ -220,17 +224,17 @@
         }
         
         .prize .ico svg {
-            width: 22px;
-            height: 22px;
+            width: 1.375rem;
+            height: 1.375rem;
         }
         
         .prize strong {
-            font: 700 17px var(--f-display);
+            font: 700 1.0625rem var(--f-display);
             color: var(--prize-ink);
         }
         
         .prize p {
-            font-size: 14.5px;
+            font-size: 0.9062rem;
         }
         /* excerpt-to-excerpt transition: slide in + brief outline glow */
         
@@ -246,7 +250,7 @@
         @keyframes enter {
             from {
                 opacity: 0;
-                transform: translateX(28px);
+                transform: translateX(1.75rem);
             }
             to {
                 opacity: 1;
@@ -261,24 +265,24 @@
         }
         
         .small {
-            font-size: 13.5px;
+            font-size: 0.8438rem;
             color: var(--muted);
         }
         
         .actions {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 0.625rem;
             align-items: center;
             justify-content: space-between;
             margin-top: auto;
-            padding-top: 6px;
+            padding-top: 0.375rem;
         }
         
         .btn {
-            font: 600 15px/1 var(--f-body);
+            font: 600 0.9375rem/1 var(--f-body);
             border-radius: 10px;
-            padding: 13px 18px;
+            padding: 0.8125rem 1.125rem;
             border: 1px solid transparent;
             cursor: pointer;
             background: var(--accent);
@@ -305,17 +309,17 @@
         
         .field {
             display: grid;
-            gap: 6px;
+            gap: 0.375rem;
         }
         
         .field>label,
         .field>.lab {
             font-weight: 600;
-            font-size: 15px;
+            font-size: 0.9375rem;
         }
         
         .hint {
-            font-size: 13.5px;
+            font-size: 0.8438rem;
             color: var(--muted);
             margin-top: -2px;
         }
@@ -328,36 +332,36 @@
         input[type="text"],
         input[type="number"],
         input[type="email"] {
-            font: 16px var(--f-body);
+            font: 1rem var(--f-body);
             color: var(--ink);
             background: var(--surface);
             border: 1px solid var(--line);
             border-radius: 9px;
-            padding: 11px 12px;
+            padding: 0.6875rem 0.75rem;
             width: 100%;
         }
         
         .err {
-            font-size: 13px;
+            font-size: 0.8125rem;
             color: var(--bad);
         }
         
         .opts {
             display: grid;
-            gap: 8px;
+            gap: 0.5rem;
         }
         
         .opts.row {
-            grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(4rem, 1fr));
         }
         
         label.opt {
             display: flex;
-            gap: 12px;
+            gap: 0.75rem;
             align-items: flex-start;
             border: 1px solid var(--line);
             border-radius: 11px;
-            padding: 12px 14px;
+            padding: 0.75rem 0.875rem;
             cursor: pointer;
             background: var(--surface);
             position: relative;
@@ -375,8 +379,8 @@
         
         label.opt .dot {
             flex: none;
-            width: 18px;
-            height: 18px;
+            width: 1.125rem;
+            height: 1.125rem;
             border-radius: 50%;
             border: 2px solid var(--line);
             margin-top: 2px;
@@ -389,7 +393,7 @@
         
         label.opt.sel .dot {
             border-color: var(--accent);
-            background: radial-gradient(circle, var(--accent) 0 4px, transparent 5px);
+            background: radial-gradient(circle, var(--accent) 0 0.25rem, transparent 0.3125rem);
         }
         
         label.opt.dis {
@@ -399,7 +403,7 @@
         
         .opts.row label.opt {
             justify-content: center;
-            padding: 10px 6px;
+            padding: 0.625rem 0.375rem;
             font-weight: 500;
         }
         
@@ -413,7 +417,7 @@
         }
         
         .opt-s {
-            font-size: 13.5px;
+            font-size: 0.8438rem;
             color: var(--muted);
             display: block;
         }
@@ -421,17 +425,17 @@
         .player {
             display: grid;
             grid-template-columns: auto 1fr;
-            gap: 16px;
+            gap: 1rem;
             align-items: center;
             background: var(--sunk);
             border: 1px solid var(--line);
             border-radius: 14px;
-            padding: 14px 16px;
+            padding: 0.875rem 1rem;
         }
         
         .play {
-            width: 54px;
-            height: 54px;
+            width: 3.375rem;
+            height: 3.375rem;
             border-radius: 50%;
             border: 0;
             background: var(--accent);
@@ -448,12 +452,12 @@
         }
         
         .play svg {
-            width: 20px;
-            height: 20px;
+            width: 1.25rem;
+            height: 1.25rem;
         }
         
         .track {
-            height: 6px;
+            height: 0.375rem;
             border-radius: 3px;
             background: var(--line);
             overflow: hidden;
@@ -469,54 +473,54 @@
         .pmeta {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
-            font-size: 12.5px;
+            gap: 0.625rem;
+            font-size: 0.7812rem;
             color: var(--muted);
-            margin-top: 8px;
+            margin-top: 0.5rem;
         }
         
         .flag {
-            font-size: 13px;
+            font-size: 0.8125rem;
             color: var(--warn);
         }
         
         .score {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
+            gap: 0.625rem;
         }
         
         .score div {
             background: var(--sunk);
             border-radius: 12px;
-            padding: 14px;
+            padding: 0.875rem;
         }
         
         .score b {
             display: block;
-            font: 700 30px/1.1 var(--f-display);
-            margin-top: 4px;
+            font: 700 1.875rem/1.1 var(--f-display);
+            margin-top: 0.25rem;
         }
         
         .board {
             width: 100%;
             border-collapse: collapse;
-            font-size: 14.5px;
+            font-size: 0.9062rem;
         }
         
         .board th {
             text-align: left;
             font-weight: 600;
             color: var(--muted);
-            font-size: 12px;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: .06em;
-            padding: 6px 8px;
+            padding: 0.375rem 0.5rem;
             border-bottom: 1px solid var(--line);
         }
         
         .board td {
-            padding: 9px 8px;
+            padding: 0.5625rem 0.5rem;
             border-bottom: 1px solid var(--line);
             font-variant-numeric: tabular-nums;
         }
@@ -534,7 +538,7 @@
             all: unset;
             cursor: pointer;
             display: inline-flex;
-            gap: 4px;
+            gap: 0.25rem;
             align-items: center;
         }
         
@@ -550,20 +554,20 @@
         }
         
         .board .ar {
-            font-size: 10px;
+            font-size: 0.625rem;
             opacity: .8;
         }
 
         .board tr.gap td {
             text-align: center;
             color: var(--muted);
-            padding: 2px 8px;
+            padding: 2px 0.5rem;
             letter-spacing: .2em;
         }
         
         .spin {
-            width: 28px;
-            height: 28px;
+            width: 1.75rem;
+            height: 1.75rem;
             border: 3px solid var(--line);
             border-top-color: var(--accent);
             border-radius: 50%;
