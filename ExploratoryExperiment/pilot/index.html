@@ -1,0 +1,1143 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Song Recognition Survey</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=Figtree:wght@400;500;600&display=swap">
+    <script>
+        window.SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxn3lT7AQopXTPJA-B_ccftCoMh74JtigYWjS0EmjNA6T1H5GIkZDqaCtqmX_BDtFag/exec";
+    </script>
+    <script src="clips.js"></script>
+    <style>
+         :root {
+            --bg: #f4f4fa;
+            --surface: #fff;
+            --sunk: #ecedf6;
+            --ink: #1b1d3a;
+            --muted: #5d6083;
+            --line: #dcdeee;
+            --accent: #2f3192;
+            --accent-ink: #fff;
+            --accent-soft: #e4e5f8;
+            --gold: #c4841a;
+            --prize-bg: #fff8ec;
+            --prize-line: #fbdfae;
+            --prize-ink: #b4600c;
+            --prize-chip: #ffe9c4;
+            --me: #fff4dd;
+            --bad: #b3261e;
+            --warn: #a5561c;
+            --f-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+            --f-body: "Figtree", "Segoe UI", system-ui, sans-serif;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+             :root {
+                --bg: #11122a;
+                --surface: #1a1c3b;
+                --sunk: #15173a;
+                --ink: #ecebf7;
+                --muted: #a3a5c8;
+                --line: #2d3062;
+                --accent: #a9adff;
+                --accent-ink: #13143a;
+                --accent-soft: #272a5c;
+                --gold: #f2bd62;
+                --prize-bg: #2c2418;
+                --prize-line: #5e4724;
+                --prize-ink: #ffc978;
+                --prize-chip: #4a3820;
+                --me: #3a3020;
+                --bad: #f28b82;
+                --warn: #f0a868;
+                color-scheme: dark;
+            }
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font: 16px/1.55 var(--f-body);
+        }
+        
+        .wrap {
+            max-width: 620px;
+            margin: 0 auto;
+            padding: 28px 16px 64px;
+        }
+        
+        h2 {
+            font: 700 25px/1.15 var(--f-display);
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+        
+        p {
+            margin: 0;
+        }
+        
+        .eyebrow {
+            font: 600 12px/1 var(--f-body);
+            letter-spacing: .09em;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+        
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px -18px rgba(20, 20, 70, .35);
+        }
+        
+        .top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 24px;
+            border-bottom: 1px solid var(--line);
+        }
+        
+        .brand {
+            font: 700 15px var(--f-display);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .brand i {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--gold);
+        }
+        
+        .prog {
+            height: 5px;
+            background: var(--sunk);
+            overflow: hidden;
+        }
+        
+        .prog i {
+            display: block;
+            height: 100%;
+            background: var(--accent);
+            width: 0;
+            transition: width .2s;
+        }
+        
+        .screen {
+            padding: 30px 28px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-height: 520px;
+        }
+        
+        @media (max-width: 480px) {
+            .screen {
+                padding: 24px 18px;
+            }
+            .top {
+                padding: 12px 18px;
+            }
+        }
+        
+        .lede {
+            color: var(--muted);
+            line-height: 1.65;
+        }
+        
+        .rules {
+            display: grid;
+            gap: 18px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            line-height: 1.65;
+        }
+        
+        .rules li {
+            display: grid;
+            grid-template-columns: 26px 1fr;
+            gap: 12px;
+            font-size: 15px;
+            color: var(--muted);
+        }
+        /* rule title: full-contrast ink, a touch larger; body text stays muted */
+        
+        .rules b {
+            margin-bottom: 3px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+        
+        .rules .k {
+            font: 600 12px/26px var(--f-body);
+            color: var(--accent);
+            background: var(--accent-soft);
+            border-radius: 6px;
+            text-align: center;
+            height: 26px;
+        }
+        
+        .rules b {
+            display: block;
+        }
+        
+        .prize {
+            background: var(--prize-bg);
+            border: 1px solid var(--prize-line);
+            border-radius: 12px;
+            padding: 16px 18px;
+            display: grid;
+            grid-template-columns: 40px 1fr;
+            gap: 8px 14px;
+            line-height: 1.6;
+        }
+        
+        .prize .ico {
+            grid-row: span 3;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--prize-chip);
+            color: var(--prize-ink);
+            display: grid;
+            place-items: center;
+        }
+        
+        .prize .ico svg {
+            width: 22px;
+            height: 22px;
+        }
+        
+        .prize strong {
+            font: 700 17px var(--f-display);
+            color: var(--prize-ink);
+        }
+        
+        .prize p {
+            font-size: 14.5px;
+        }
+        /* excerpt-to-excerpt transition: slide in + brief outline glow */
+        
+        @media (prefers-reduced-motion: no-preference) {
+            .screen.enter {
+                animation: enter .45s cubic-bezier(.2, .7, .2, 1);
+            }
+            .card.flash {
+                animation: flash .7s ease-out;
+            }
+        }
+        
+        @keyframes enter {
+            from {
+                opacity: 0;
+                transform: translateX(28px);
+            }
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+        
+        @keyframes flash {
+            from {
+                box-shadow: 0 0 0 4px var(--accent-soft), 0 10px 30px -18px rgba(20, 20, 70, .35);
+            }
+        }
+        
+        .small {
+            font-size: 13.5px;
+            color: var(--muted);
+        }
+        
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 6px;
+        }
+        
+        .btn {
+            font: 600 15px/1 var(--f-body);
+            border-radius: 10px;
+            padding: 13px 18px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            background: var(--accent);
+            color: var(--accent-ink);
+        }
+        
+        .btn[disabled] {
+            opacity: .4;
+            cursor: not-allowed;
+        }
+        
+        .btn.ghost {
+            background: transparent;
+            color: var(--muted);
+            border-color: var(--line);
+        }
+        
+        button:focus-visible,
+        input:focus-visible,
+        label.opt:focus-within {
+            outline: 2px solid var(--gold);
+            outline-offset: 2px;
+        }
+        
+        .field {
+            display: grid;
+            gap: 6px;
+        }
+        
+        .field>label,
+        .field>.lab {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        .hint {
+            font-size: 13.5px;
+            color: var(--muted);
+            margin-top: -2px;
+        }
+        
+        .req {
+            color: var(--bad);
+            font-weight: 600;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="email"] {
+            font: 16px var(--f-body);
+            color: var(--ink);
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            padding: 11px 12px;
+            width: 100%;
+        }
+        
+        .err {
+            font-size: 13px;
+            color: var(--bad);
+        }
+        
+        .opts {
+            display: grid;
+            gap: 8px;
+        }
+        
+        .opts.row {
+            grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+        }
+        
+        label.opt {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            padding: 12px 14px;
+            cursor: pointer;
+            background: var(--surface);
+            position: relative;
+        }
+        
+        label.opt:hover {
+            border-color: var(--accent);
+        }
+        
+        label.opt input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        label.opt .dot {
+            flex: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--line);
+            margin-top: 2px;
+        }
+        
+        label.opt.sel {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+        
+        label.opt.sel .dot {
+            border-color: var(--accent);
+            background: radial-gradient(circle, var(--accent) 0 4px, transparent 5px);
+        }
+        
+        label.opt.dis {
+            opacity: .45;
+            cursor: not-allowed;
+        }
+        
+        .opts.row label.opt {
+            justify-content: center;
+            padding: 10px 6px;
+            font-weight: 500;
+        }
+        
+        .opts.row label.opt .dot {
+            display: none;
+        }
+        
+        .opt-t {
+            font-weight: 600;
+            display: block;
+        }
+        
+        .opt-s {
+            font-size: 13.5px;
+            color: var(--muted);
+            display: block;
+        }
+        
+        .player {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 16px;
+            align-items: center;
+            background: var(--sunk);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 14px 16px;
+        }
+        
+        .play {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            border: 0;
+            background: var(--accent);
+            color: var(--accent-ink);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+        }
+        
+        .play[disabled] {
+            background: var(--line);
+            color: var(--muted);
+            cursor: default;
+        }
+        
+        .play svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .track {
+            height: 6px;
+            border-radius: 3px;
+            background: var(--line);
+            overflow: hidden;
+        }
+        
+        .track i {
+            display: block;
+            height: 100%;
+            width: 0;
+            background: var(--gold);
+        }
+        
+        .pmeta {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 12.5px;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+        
+        .flag {
+            font-size: 13px;
+            color: var(--warn);
+        }
+        
+        .score {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+        
+        .score div {
+            background: var(--sunk);
+            border-radius: 12px;
+            padding: 14px;
+        }
+        
+        .score b {
+            display: block;
+            font: 700 30px/1.1 var(--f-display);
+            margin-top: 4px;
+        }
+        
+        .board {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14.5px;
+        }
+        
+        .board th {
+            text-align: left;
+            font-weight: 600;
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 6px 8px;
+            border-bottom: 1px solid var(--line);
+        }
+        
+        .board td {
+            padding: 9px 8px;
+            border-bottom: 1px solid var(--line);
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .board .n {
+            text-align: right;
+        }
+        
+        .board tr.me td {
+            background: var(--me);
+            font-weight: 600;
+        }
+        
+        .board th button {
+            all: unset;
+            cursor: pointer;
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+        }
+        
+        .board th button:focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 2px;
+            border-radius: 3px;
+        }
+        
+        .board th[aria-sort="ascending"] button,
+        .board th[aria-sort="descending"] button {
+            color: var(--accent);
+        }
+        
+        .board .ar {
+            font-size: 10px;
+            opacity: .8;
+        }
+
+        .board tr.gap td {
+            text-align: center;
+            color: var(--muted);
+            padding: 2px 8px;
+            letter-spacing: .2em;
+        }
+        
+        .spin {
+            width: 28px;
+            height: 28px;
+            border: 3px solid var(--line);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: s 1s linear infinite;
+        }
+        
+        @keyframes s {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        [hidden] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="card">
+            <div class="screen" id="stage" aria-live="polite"></div>
+            <div class="prog" aria-hidden="true"><i id="prog"></i></div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            "use strict";
+            var FILES = (window.CLIPS || []).slice();
+            var RESP = [{
+                v: "title",
+                t: "Yes, and I know the song title."
+            }, {
+                v: "recall",
+                t: "I am certain I have heard this song, but I cannot recall its title."
+            }, {
+                v: "no",
+                t: "No, I don't know this song."
+            }];
+            var COUNTS = ["0", "1", "2", "3–5", "6–10", "11–20", "21+"];
+            var stage = document.getElementById("stage");
+
+            function $(id) {
+                return document.getElementById(id);
+            }
+
+            function esc(s) {
+                return String(s == null ? "" : s).replace(/[&<>"]/g, function(c) {
+                    return {
+                        "&": "&amp;",
+                        "<": "&lt;",
+                        ">": "&gt;",
+                        '"': "&quot;"
+                    }[c];
+                });
+            }
+
+            for (var i = FILES.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var x = FILES[i];
+                FILES[i] = FILES[j];
+                FILES[j] = x;
+            }
+            /* Demo: each participant hears N random excerpts. Set to 0 to use all. */
+            var DEMO_N = 3;
+            if (DEMO_N > 0) FILES = FILES.slice(0, DEMO_N);
+            var S = {
+                screen: "welcome",
+                k: 0,
+                pid: "p_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+                who: {
+                    mode: "",
+                    name: "",
+                    email: ""
+                },
+                trials: [],
+                about: {
+                    age: "",
+                    gender: "",
+                    disney: "",
+                    musicals: ""
+                },
+                sort: {
+                    key: "correct",
+                    dir: -1
+                },
+                result: null
+            };
+            var audios = {};
+
+            function audioFor(k) {
+                if (k >= FILES.length) return null;
+                if (!audios[k]) {
+                    var a = new Audio("excerpts_8s_anonymized/" + FILES[k]);
+                    a.preload = "auto";
+                    audios[k] = a;
+                }
+                return audios[k];
+            }
+
+            function progress() {
+                var total = FILES.length + 3,
+                    step = {
+                        welcome: 0,
+                        who: 1,
+                        trial: 2 + S.k,
+                        about: 2 + FILES.length,
+                        results: total
+                    }[S.screen];
+                $("prog").style.width = (step / total * 100) + "%";
+            }
+
+            function go(screen) {
+                S.screen = screen;
+                progress();
+                ({
+                    welcome: welcome,
+                    who: who,
+                    trial: trial,
+                    about: about,
+                    results: results
+                })[screen]();
+                stage.classList.remove("enter");
+                void stage.offsetWidth; /* restart the animation */
+                stage.classList.add("enter");
+                if (screen === "trial") {
+                    var card = stage.parentNode;
+                    card.classList.remove("flash");
+                    void card.offsetWidth;
+                    card.classList.add("flash");
+                }
+                window.scrollTo(0, 0);
+            }
+
+            window.addEventListener("beforeunload", function(e) {
+                if (S.screen === "trial" || S.screen === "about") {
+                    e.preventDefault();
+                    e.returnValue = "";
+                }
+            });
+
+            /* ---------- welcome ---------- */
+            function welcome() {
+                var mins = Math.max(2, Math.ceil(FILES.length * 20 / 60) + 1);
+                stage.innerHTML =
+                    '<div class="eyebrow">About ' + mins + ' minutes · ' + FILES.length + ' excerpts</div>' +
+                    '<h2>Song Recognition Survey</h2>' +
+                    '<p class="lede">Thank you for taking part. I am selecting songs for an upcoming music study and need to know which songs are widely recognized.</p>' +
+                    '<ul class="rules">' +
+                    '<li><span class="k">1</span><span><b>Listen and answer.</b>For each 8-second excerpt, tell me whether you know the song.</span></li>' +
+                    '<li><span class="k">2</span><span><b>Respond based on your first impression.</b>You may answer while the excerpt is still playing.</span></li>' +
+                    '<li><span class="k">3</span><span><b>Answer honestly.</b>Please don\'t look anything up, use song-identification apps, or ask anyone nearby. An honest "no" is just as useful to me as a "yes."</span></li>' +
+                    '</ul>' +
+                    '<div class="prize"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3c-.6.8-.6 1.7 0 2.5M11 3c-.6.8-.6 1.7 0 2.5"/><path d="M3 21h14"/></svg></span>' +
+                    '<strong>Prize: coffee or boba tea for the 3 top scorers</strong>' +
+                    '<p>On the next page, you can opt out of scoring and the prize.</p>' +
+                    '<p>Scores are based on how many songs you name correctly and how quickly you respond. Response times are recorded in the background, starting when you first press play, and answers that take too long don\'t count.</p></div>' +
+                    (FILES.length ? "" : '<p class="err">No excerpts are set up yet (clips.js is empty).</p>') +
+                    '<div class="actions"><span></span><button class="btn" id="next" type="button"' + (FILES.length ? "" : " disabled") + '>Begin</button></div>';
+                $("next").onclick = function() {
+                    go("who");
+                };
+            }
+
+            /* ---------- leaderboard opt-in ---------- */
+            function who() {
+                var w = S.who;
+                stage.innerHTML =
+                    '<div class="eyebrow">Before you begin</div>' +
+                    '<h2>Would you like to appear on the leaderboard?</h2>' +
+                    '<p class="lede">You will see your own score either way. Only participants on the leaderboard are eligible for the prize.</p>' +
+                    '<div class="opts" role="radiogroup" aria-label="Leaderboard">' +
+                    opt("who", "named", "Yes, display my name", "Eligible for the prize", w.mode === "named") +
+                    opt("who", "anon", "No, participate anonymously", "Not eligible for the prize", w.mode === "anon") +
+                    '</div>' +
+                    '<div class="field" id="nameBox"' + (w.mode === "named" ? "" : " hidden") + ' style="gap:16px">' +
+                    '<div class="field"><label for="f-name">Display name <span class="req">*</span></label><span class="hint">This name will appear on the leaderboard. Up to 20 characters.</span><input type="text" id="f-name" autocomplete="nickname" maxlength="20" value="' + esc(w.name) + '"></div>' +
+                    '<div class="field"><label for="f-email">Email address <span class="req">*</span></label><span class="hint">Used only to contact prize winners, and never displayed. If you take the survey more than once, only your first attempt counts for the prize.</span><input type="email" id="f-email" autocomplete="email" value="' + esc(w.email) + '"><span class="err" id="emErr" hidden>Please enter a valid email address.</span></div>' +
+                    '</div>' +
+                    '<div class="actions"><button class="btn ghost" type="button" id="back">Back</button><button class="btn" id="next" type="button">Continue to the first excerpt</button></div>';
+                var nm = $("f-name"),
+                    em = $("f-email");
+
+                function okEmail() {
+                    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(w.email.trim());
+                }
+
+                function check() {
+                    $("next").disabled = !(w.mode === "anon" || (w.mode === "named" && w.name.trim() && okEmail()));
+                }
+                bindOpts("who", function(v) {
+                    w.mode = v;
+                    $("nameBox").hidden = v !== "named";
+                    check();
+                });
+                nm.oninput = function() {
+                    w.name = nm.value;
+                    check();
+                };
+                em.oninput = function() {
+                    w.email = em.value;
+                    $("emErr").hidden = true;
+                    check();
+                };
+                em.onblur = function() {
+                    $("emErr").hidden = !w.email.trim() || okEmail();
+                };
+                check();
+                $("back").onclick = function() {
+                    go("welcome");
+                };
+                $("next").onclick = function() {
+                    S.k = 0;
+                    audioFor(0);
+                    audioFor(1);
+                    go("trial");
+                };
+            }
+
+            /* ---------- trial ---------- */
+            var PLAY = '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M5 3.5v13l11-6.5z"/></svg>';
+            var REPLAY = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 10a6 6 0 1 0 2-4.5"/><path d="M4 3v3.5h3.5"/></svg>';
+
+            function trial() {
+                var k = S.k,
+                    file = FILES[k],
+                    a = audioFor(k);
+                audioFor(k + 1);
+                var t = S.trials[k] = {
+                    clip_id: file.replace(/\.[^.]+$/, ""),
+                    position: k + 1,
+                    response: "",
+                    text: "",
+                    response_ms: null,
+                    submit_ms: null,
+                    replays: 0,
+                    paste_blocked: 0,
+                    changed: false
+                };
+                var onset = null,
+                    plays = 0,
+                    playing = false;
+                stage.innerHTML =
+                    '<div class="eyebrow">Excerpt ' + (k + 1) + ' of ' + FILES.length + '</div>' +
+                    '<h2>Do you recognize this song?</h2>' +
+                    '<div class="player"><button class="play" id="play" type="button" aria-label="Play excerpt">' + PLAY + '</button>' +
+                    '<div><div class="track"><i id="bar"></i></div><div class="pmeta"><span id="pstate">Press play when you are ready.</span><span id="ptime"></span></div></div></div>' +
+                    '<div class="opts" role="radiogroup" aria-label="Do you recognize this song?">' +
+                    RESP.map(function(r) {
+                        return opt("resp", r.v, r.t, "", false, true);
+                    }).join("") + '</div>' +
+                    '<div class="field" id="box-title" hidden><label for="f-title">Song title <span class="req">*</span></label><input type="text" id="f-title" autocomplete="off" spellcheck="false"></div>' +
+                    '<div class="field" id="box-recall" hidden><label for="f-recall">What clues can you remember? <span class="req">*</span></label><span class="hint">For example, the film or musical it comes from, the singer, or a lyric.</span><input type="text" id="f-recall" autocomplete="off"></div>' +
+                    '<p class="flag" id="flag" hidden></p>' +
+                    '<div class="actions"><span></span><button class="btn" id="next" type="button" disabled>' + (k + 1 === FILES.length ? "Continue" : "Next excerpt") + '</button></div>';
+                var ti = $("f-title"),
+                    re = $("f-recall"),
+                    pb = $("play");
+                [ti, re].forEach(function(el) {
+                    ["paste", "drop"].forEach(function(ev) {
+                        el.addEventListener(ev, function(e) {
+                            e.preventDefault();
+                            t.paste_blocked++;
+                            $("flag").hidden = false;
+                            $("flag").textContent = "Pasting is disabled. Please type your answer.";
+                        });
+                    });
+                });
+
+                function ui() {
+                    pb.disabled = playing;
+                    pb.innerHTML = plays === 0 || playing ? PLAY : REPLAY;
+                    pb.setAttribute("aria-label", plays === 0 ? "Play excerpt" : "Replay excerpt");
+                    $("pstate").textContent = playing ? "Playing" : plays === 0 ? "Press play when you are ready." : "Replay if you like";
+                }
+                a.ontimeupdate = function() {
+                    var d = isFinite(a.duration) && a.duration > 0 ? a.duration : 8;
+                    $("bar").style.width = Math.min(100, a.currentTime / d * 100) + "%";
+                    $("ptime").textContent = a.currentTime.toFixed(1) + " / " + d.toFixed(1) + " s";
+                };
+                a.onplaying = function() {
+                    if (onset === null) {
+                        onset = performance.now();
+                        stage.querySelectorAll('label.opt[data-g="resp"]').forEach(function(l) {
+                            l.classList.remove("dis");
+                            l.querySelector("input").disabled = false;
+                        });
+                    }
+                };
+                a.onended = function() {
+                    playing = false;
+                    ui();
+                };
+                a.onerror = function() {
+                    playing = false;
+                    ui();
+                    $("pstate").textContent = "The excerpt didn't load. Check your connection and press play again.";
+                };
+                pb.onclick = function() {
+                    plays++;
+                    t.replays = Math.max(0, plays - 1);
+                    playing = true;
+                    ui();
+                    a.currentTime = 0;
+                    var p = a.play();
+                    if (p && p.catch) p.catch(function() {
+                        playing = false;
+                        plays = Math.max(0, plays - 1);
+                        t.replays = Math.max(0, plays - 1);
+                        ui();
+                        $("pstate").textContent = "The excerpt didn't play. Please press play again.";
+                    });
+                };
+                bindOpts("resp", function(v) {
+                    if (onset === null) return;
+                    if (t.response_ms === null) t.response_ms = Math.round(performance.now() - onset);
+                    else if (t.response !== v) t.changed = true;
+                    t.response = v;
+                    t.text = v === "title" ? ti.value : v === "recall" ? re.value : "";
+                    $("box-title").hidden = v !== "title";
+                    $("box-recall").hidden = v !== "recall";
+                    check();
+                    if (v === "title") ti.focus();
+                    else if (v === "recall") re.focus();
+                });
+                ti.oninput = function() {
+                    t.text = ti.value;
+                    check();
+                };
+                re.oninput = function() {
+                    t.text = re.value;
+                    check();
+                };
+                [ti, re].forEach(function(el) {
+                    el.addEventListener("keydown", function(e) {
+                        if (e.key === "Enter" && !$("next").disabled) $("next").click();
+                    });
+                });
+
+                function check() {
+                    $("next").disabled = !(t.response && (t.response === "no" || t.text.trim()));
+                }
+                $("next").onclick = function() {
+                    t.submit_ms = Math.round(performance.now() - onset);
+                    saveTrial(t);
+                    a.pause();
+                    a.ontimeupdate = a.onplaying = a.onended = a.onerror = null;
+                    delete audios[k];
+                    if (k + 1 < FILES.length) {
+                        S.k = k + 1;
+                        go("trial");
+                    } else go("about");
+                };
+            }
+
+            /* ---------- about ---------- */
+            function about() {
+                var a = S.about;
+                stage.innerHTML =
+                    '<div class="eyebrow">Final questions</div>' +
+                    '<h2>About you</h2>' +
+                    '<div class="field"><label for="f-age">What is your age? <span class="req">*</span></label><input type="number" id="f-age" min="18" max="99" inputmode="numeric" style="max-width:120px" value="' + esc(a.age) + '"></div>' +
+                    '<div class="field"><span class="lab" id="l-g">What is your gender? <span class="req">*</span></span><div class="opts" role="radiogroup" aria-labelledby="l-g">' + ["Female", "Male", "Non-binary", "Prefer not to say"].map(function(g) {
+                        return opt("gender", g, g, "", a.gender === g);
+                    }).join("") + '</div></div>' +
+                    '<div class="field"><span class="lab" id="l-d">Approximately how many Disney animated films have you watched or know the songs from? <span class="req">*</span></span>' +
+                    '<span class="hint">Count only films made by Walt Disney Animation Studios (not Marvel, Pixar, or live-action films).</span>' +
+                    '<div class="opts row" role="radiogroup" aria-labelledby="l-d">' + COUNTS.map(function(v) {
+                        return opt("disney", v, v, "", a.disney === v);
+                    }).join("") + '</div></div>' +
+                    '<div class="field"><span class="lab" id="l-m">Approximately how many non-Disney musicals have you watched or know the songs from? <span class="req">*</span></span>' +
+                    '<span class="hint">A musical is a stage show or film in which the story is told largely through songs.</span>' +
+                    '<div class="opts row" role="radiogroup" aria-labelledby="l-m">' + COUNTS.map(function(v) {
+                        return opt("musicals", v, v, "", a.musicals === v);
+                    }).join("") + '</div></div>' +
+                    '<div class="actions"><span></span><button class="btn" id="next" type="button">Submit and view results</button></div>';
+                var age = $("f-age");
+
+                function check() {
+                    $("next").disabled = !(a.age && +a.age >= 18 && +a.age <= 120 && a.gender && a.disney && a.musicals);
+                }
+                age.oninput = function() {
+                    a.age = age.value;
+                    check();
+                };
+                bindOpts("gender", function(v) {
+                    a.gender = v;
+                    check();
+                });
+                bindOpts("disney", function(v) {
+                    a.disney = v;
+                    check();
+                });
+                bindOpts("musicals", function(v) {
+                    a.musicals = v;
+                    check();
+                });
+                check();
+                $("next").onclick = function() {
+                    go("results");
+                };
+            }
+
+            /* ---------- submit + results ---------- */
+            /* Save each excerpt's response as soon as "Next" is clicked, so data from
+               people who quit early is kept. Fire-and-forget: if it fails, the final
+               submission sends it again and the server skips duplicates. */
+            function saveTrial(t) {
+                if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(window.SCRIPT_URL || "")) return;
+                try {
+                    fetch(window.SCRIPT_URL, {
+                        method: "POST",
+                        body: JSON.stringify({
+                            kind: "trial",
+                            pid: S.pid,
+                            trial: t
+                        }),
+                        keepalive: true
+                    }).catch(function() {});
+                } catch (e) {}
+            }
+
+            function payload() {
+                var named = S.who.mode === "named";
+                return {
+                    pid: S.pid,
+                    name: named ? S.who.name.trim() : "",
+                    email: named ? S.who.email.trim() : "",
+                    age: +S.about.age,
+                    gender: S.about.gender,
+                    disney_films: S.about.disney,
+                    musicals: S.about.musicals,
+                    device: window.matchMedia && window.matchMedia("(pointer: coarse)").matches ? "touch" : "desktop",
+                    trials: S.trials
+                };
+            }
+
+            function results() {
+                if (S.result) return showResults();
+                stage.innerHTML = '<div class="eyebrow">Almost done</div><h2>Saving your answers…</h2><div class="spin" role="status" aria-label="Saving"></div>';
+                var body = JSON.stringify(payload());
+                try {
+                    localStorage.setItem("songSurveyBackup_" + S.pid, body);
+                } catch (e) {}
+                if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(window.SCRIPT_URL || "")) return failed("The survey isn't connected to its spreadsheet yet.");
+                fetch(window.SCRIPT_URL, {
+                        method: "POST",
+                        body: body
+                    })
+                    .then(function(r) {
+                        if (!r.ok) throw new Error("HTTP " + r.status);
+                        return r.json();
+                    })
+                    .then(function(res) {
+                        S.result = res;
+                        try {
+                            localStorage.removeItem("songSurveyBackup_" + S.pid);
+                        } catch (e) {}
+                        showResults();
+                    })
+                    .catch(function() {
+                        failed("Your answers couldn't be sent. Please check your internet connection and try again.");
+                    });
+            }
+
+            function failed(msg) {
+                stage.innerHTML = '<div class="eyebrow">Not saved yet</div><h2>Something went wrong</h2><p class="lede">' + esc(msg) + ' Please keep this page open.</p>' +
+                    '<div class="actions"><span></span><button class="btn" id="retry" type="button">Try again</button></div>';
+                $("retry").onclick = function() {
+                    results();
+                };
+            }
+
+            function showResults() {
+                var res = S.result,
+                    me = res.me || {
+                        correct: 0,
+                        avg_s: null
+                    },
+                    named = S.who.mode === "named";
+                var note = !named ? "You took part anonymously, so you are not on the leaderboard. " :
+                    res.duplicate ? "This email has already been used, so this attempt is not on the leaderboard. " : "";
+                stage.innerHTML =
+                    '<div class="eyebrow">Survey complete</div>' +
+                    '<h2>Thank you for participating.</h2>' +
+                    '<div class="score"><div><span class="small">Named correctly in time</span><b>' + me.correct + ' <span class="small">of ' + FILES.length + '</span></b></div>' +
+                    '<div><span class="small">Average response time</span><b>' + (me.avg_s == null ? "–" : me.avg_s.toFixed(1) + " s") + '</b></div></div>' +
+                    (note ? '<p class="small">' + note + '</p>' : '') +
+                    '<div id="boardBox"></div>';
+                drawBoard();
+            }
+
+            /* The server sends the top N (already ranked) plus this participant's own
+               row. If they're outside the top N, or not listed, their row is pinned
+               below a "…" separator. Sorting only reorders the top rows. */
+            function drawBoard() {
+                var res = S.result;
+                var rows = (res.board || []).map(function(r) {
+                    return { rank: r.rank, name: r.name, n: r.correct, avg: r.avg_s, me: r.me };
+                });
+                var mine = res.me,
+                    pinned = null;
+                if (mine && !rows.some(function(x) { return x.me; })) {
+                    pinned = {
+                        rank: mine.rank,
+                        name: mine.rank ? mine.name : "You (not listed)",
+                        n: mine.correct,
+                        avg: mine.avg_s,
+                        me: true
+                    };
+                }
+                var k = S.sort.key,
+                    dir = S.sort.dir;
+                rows.sort(function(a, b) {
+                    var nul = (a.avg == null) - (b.avg == null);
+                    if (k === "name") return dir * String(a.name).localeCompare(String(b.name));
+                    if (k === "avg") return nul || dir * ((a.avg || 0) - (b.avg || 0)) || (a.rank - b.rank);
+                    return dir === -1 ? a.rank - b.rank : b.rank - a.rank;
+                });
+                function tr(x) {
+                    return '<tr class="' + (x.me ? "me" : "") + '"><td>' + (x.rank || "–") + "</td><td>" + esc(x.name) + '</td><td class="n">' + x.n + '</td><td class="n">' + (x.avg == null ? "–" : x.avg.toFixed(1) + " s") + "</td></tr>";
+                }
+                var trs = rows.map(tr).join("");
+                if (!rows.length && !pinned) trs = '<tr><td colspan="4" class="small">No one is on the leaderboard yet.</td></tr>';
+                if (pinned) {
+                    /* "…" only when ranks are skipped (e.g. top 10, then #14). Not for #11
+                       right after #10, and not for unranked (anonymous/duplicate) rows. */
+                    var last = rows.reduce(function(m, x) { return Math.max(m, x.rank || 0); }, 0);
+                    var gap = pinned.rank && pinned.rank > last + 1;
+                    trs += (gap ? '<tr class="gap" aria-hidden="true"><td colspan="4">…</td></tr>' : "") + tr(pinned);
+                }
+
+                function th(key, label, cls) {
+                    var on = k === key;
+                    return '<th class="' + (cls || "") + '" aria-sort="' + (on ? (dir === 1 ? "ascending" : "descending") : "none") + '"><button type="button" data-sort="' + key + '">' + label + '<span class="ar" aria-hidden="true">' + (on ? (dir === 1 ? "▲" : "▼") : "↕") + "</span></button></th>";
+                }
+                $("boardBox").innerHTML = '<p class="small" style="margin-bottom:8px">Score = number of songs named correctly within the time limit.</p>' +
+                    '<table class="board"><thead><tr><th>#</th>' + th("name", "Name") + th("correct", "Score", "n") + th("avg", "Avg. response time", "n") + "</tr></thead><tbody>" + trs + "</tbody></table>";
+                $("boardBox").querySelectorAll("button[data-sort]").forEach(function(b) {
+                    b.onclick = function() {
+                        var key = b.getAttribute("data-sort");
+                        if (S.sort.key === key) S.sort.dir = -S.sort.dir;
+                        else S.sort = {
+                            key: key,
+                            dir: key === "correct" ? -1 : 1
+                        };
+                        drawBoard();
+                        var nb = $("boardBox").querySelector('button[data-sort="' + key + '"]');
+                        if (nb) nb.focus();
+                    };
+                });
+            }
+
+            /* ---------- shared ---------- */
+            function opt(group, val, title, sub, sel, dis) {
+                return '<label class="opt' + (sel ? " sel" : "") + (dis ? " dis" : "") + '" data-g="' + group + '" data-v="' + esc(val) + '">' +
+                    '<input type="radio" name="' + group + '" value="' + esc(val) + '"' + (sel ? " checked" : "") + (dis ? " disabled" : "") + '>' +
+                    '<span class="dot"></span><span><span class="opt-t">' + esc(title) + '</span>' + (sub ? '<span class="opt-s">' + esc(sub) + "</span>" : "") + "</span></label>";
+            }
+
+            function bindOpts(group, cb) {
+                stage.querySelectorAll('label.opt[data-g="' + group + '"]').forEach(function(l) {
+                    l.querySelector("input").addEventListener("change", function() {
+                        stage.querySelectorAll('label.opt[data-g="' + group + '"]').forEach(function(o) {
+                            o.classList.toggle("sel", o === l);
+                        });
+                        cb(l.getAttribute("data-v"));
+                    });
+                });
+            }
+
+            go("welcome");
+        })();
+    </script>
+</body>
+
+</html>

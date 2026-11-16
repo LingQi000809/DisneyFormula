@@ -1,0 +1,67 @@
+# Copies the survey site (index.html, clips.js, excerpts_8s_anonymized/) from
+# ExploratoryExperiment/pilot/ into the public repo song-recognition-survey,
+# served at https://lingqi0809.github.io/song-recognition-survey/.
+# Runs on every push to master that touches those files, or manually from the
+# Actions tab ("Run workflow").
+#
+# One-time setup (see ExploratoryExperiment/pilot/SETUP.md, step 4):
+#   - create the public repo song-recognition-survey and turn on Pages
+#   - add a token with write access to it as the secret SITE_DEPLOY_TOKEN
+
+name: Deploy survey site
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "ExploratoryExperiment/pilot/index.html"
+      - "ExploratoryExperiment/pilot/clips.js"
+      - "ExploratoryExperiment/pilot/excerpts_8s_anonymized/**"
+      - ".github/workflows/deploy-survey.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-survey
+  cancel-in-progress: false
+
+env:
+  SITE_REPO: LingQi000809/song-recognition-survey
+  SITE_DIR: . # files go at the top of the site repo
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repo
+        uses: actions/checkout@v4
+        with:
+          path: src
+
+      - name: Check out the site repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SITE_REPO }}
+          token: ${{ secrets.SITE_DEPLOY_TOKEN }}
+          path: site
+
+      - name: Copy survey files
+        run: |
+          src=src/ExploratoryExperiment/pilot
+          dst="site/$SITE_DIR"
+          mkdir -p "$dst/excerpts_8s_anonymized"
+          rsync -a --delete "$src/excerpts_8s_anonymized/" "$dst/excerpts_8s_anonymized/"
+          cp "$src/index.html" "$src/clips.js" "$dst/"
+
+      - name: Commit and push if anything changed
+        working-directory: site
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Site already up to date."
+          else
+            # neutral message: the site repo is public
+            git commit -m "Update survey"
+            git push
+          fi
