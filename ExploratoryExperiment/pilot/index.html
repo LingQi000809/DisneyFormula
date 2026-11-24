@@ -535,6 +535,8 @@
             var MIN_EXPOSURE = 3;
             var GIFT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12"/><path d="M12 8c-1.5-3-5-3.5-5-1.25S10 8 12 8zM12 8c1.5-3 5-3.5 5-1.25S14 8 12 8z"/></svg>';
             var SCREENED_KEY = "songSurveyScreened";
+            var PROGRESS_KEY = "songSurveyProgress"; /* unfinished survey, for resuming */
+            var PROGRESS_MAX_H = 72; /* forget unfinished surveys after this many hours */
             var stage = document.getElementById("stage");
 
             function $(id) {
@@ -559,9 +561,11 @@
                     return null;
                 }
             }
-            /* Add ?reset to the link to clear the screened-out flag (for testing). */
+            /* Add ?reset to the link to clear the screened-out flag and any saved
+               progress (for testing). */
             if (/[?&]reset\b/.test(location.search)) store(function(ls) {
                 ls.removeItem(SCREENED_KEY);
+                ls.removeItem(PROGRESS_KEY);
             });
 
             for (var i = FILES.length - 1; i > 0; i--) {
@@ -573,6 +577,9 @@
             /* Demo: each participant hears N random excerpts. Set to 0 to use all. */
             var DEMO_N = 3;
             if (DEMO_N > 0) FILES = FILES.slice(0, DEMO_N);
+            /* Estimated length shown on the welcome page, in minutes (rough guide:
+               15 s per excerpt + 1 min for the questions). Update it with DEMO_N. */
+            var EST_MINUTES = 2;
             var S = {
                 screen: "welcome",
                 k: 0,
@@ -593,6 +600,73 @@
             };
             var audios = {};
 
+            /* ---------- resume ----------
+               After the background questions and after every "Next excerpt", the
+               page saves its place in this browser. Reopening the link on the same
+               device continues at the next unanswered excerpt with the same pid.
+               Cleared once the final submission is saved. */
+            function saveProgress() {
+                store(function(ls) {
+                    ls.setItem(PROGRESS_KEY, JSON.stringify({
+                        pid: S.pid,
+                        files: FILES,
+                        k: S.k,
+                        about: S.about,
+                        draw: S.draw,
+                        at: Date.now()
+                    }));
+                });
+            }
+
+            function clearProgress() {
+                store(function(ls) {
+                    ls.removeItem(PROGRESS_KEY);
+                });
+            }
+
+            function loadProgress() {
+                var p = null;
+                try {
+                    p = JSON.parse(store(function(ls) {
+                        return ls.getItem(PROGRESS_KEY);
+                    }) || "null");
+                } catch (e) {}
+                var all = window.CLIPS || [];
+                var valid = p && p.pid && p.files && p.files.length && typeof p.k === "number" &&
+                    Date.now() - p.at < PROGRESS_MAX_H * 3600e3 &&
+                    p.files.every(function(f) {
+                        return all.indexOf(f) >= 0; /* excerpts changed since → start fresh */
+                    });
+                if (!valid) {
+                    if (p) clearProgress();
+                    return false;
+                }
+                FILES = p.files;
+                S.pid = p.pid;
+                S.k = p.k;
+                S.about = p.about;
+                S.draw = p.draw;
+                return true;
+            }
+
+            function resume() {
+                var left = FILES.length - S.k;
+                stage.innerHTML =
+                    '<div class="eyebrow">Welcome back</div>' +
+                    '<h2>Continue where you left off</h2>' +
+                    '<p class="lede">' + (left > 0 ?
+                        "Your earlier answers are saved. You have " + left + " of " + FILES.length + " excerpts left." :
+                        "You have answered all excerpts. Your answers still need to be submitted.") + '</p>' +
+                    '<div class="actions"><span></span><button class="btn" id="next" type="button">' + (left > 0 ? "Continue" : "Submit") + '</button></div>';
+                $("next").onclick = function() {
+                    if (left > 0) {
+                        audioFor(S.k);
+                        audioFor(S.k + 1);
+                        go("trial");
+                    } else go("results");
+                };
+            }
+
             function audioFor(k) {
                 if (k >= FILES.length) return null;
                 if (!audios[k]) {
@@ -611,7 +685,9 @@
                         about: 2,
                         trial: 3 + S.k,
                         results: total,
-                        screened: total
+                        screened: total,
+                        taken: total,
+                        resume: 3 + S.k
                     }[S.screen];
                 $("prog").style.width = (step / total * 100) + "%";
             }
@@ -625,7 +701,9 @@
                     trial: trial,
                     raffle: raffle,
                     results: results,
-                    screened: screened
+                    screened: screened,
+                    taken: taken,
+                    resume: resume
                 })[screen]();
                 stage.classList.remove("enter");
                 void stage.offsetWidth; /* restart the animation */
@@ -648,9 +726,8 @@
 
             /* ---------- welcome ---------- */
             function welcome() {
-                var mins = Math.max(2, Math.ceil(FILES.length * 20 / 60) + 1);
                 stage.innerHTML =
-                    '<div class="eyebrow">About ' + mins + ' minutes · ' + FILES.length + ' excerpts</div>' +
+                    '<div class="eyebrow">About ' + EST_MINUTES + ' minutes · ' + FILES.length + ' excerpts</div>' +
                     '<h2>Song Recognition Survey</h2>' +
                     '<p class="lede">Thank you for taking part. I am selecting songs for an upcoming music study and need to know which songs are widely recognized.</p>' +
                     '<ul class="rules">' +
@@ -715,6 +792,7 @@
                 $("next").onclick = function() {
                     if (eligible()) {
                         S.k = 0;
+                        saveProgress();
                         audioFor(0);
                         audioFor(1);
                         go("trial");
@@ -871,10 +949,10 @@
                     a.pause();
                     a.ontimeupdate = a.onplaying = a.onended = a.onerror = null;
                     delete audios[k];
-                    if (k + 1 < FILES.length) {
-                        S.k = k + 1;
-                        go("trial");
-                    } else go("results");
+                    S.k = k + 1;
+                    saveProgress();
+                    if (S.k < FILES.length) go("trial");
+                    else go("results");
                 };
             }
 
@@ -919,8 +997,51 @@
                     go("welcome");
                 };
                 $("next").onclick = function() {
-                    go("about");
+                    if (w.mode !== "yes") return go("about");
+                    /* Has this email already finished (or been screened out)? If the
+                       check fails or is slow, let them continue: the server still
+                       refuses a second raffle entry at the end. */
+                    var btn = $("next");
+                    btn.disabled = true;
+                    btn.textContent = "Checking…";
+                    var done = false;
+
+                    function to(screen) {
+                        if (done) return;
+                        done = true;
+                        if (screen === "screened") store(function(ls) {
+                            ls.setItem(SCREENED_KEY, "1");
+                        });
+                        go(screen);
+                    }
+                    setTimeout(function() {
+                        to("about");
+                    }, 8000);
+                    if (!connected()) return to("about");
+                    fetch(window.SCRIPT_URL, {
+                            method: "POST",
+                            body: JSON.stringify({
+                                kind: "check",
+                                email: w.email.trim()
+                            })
+                        })
+                        .then(function(r) {
+                            return r.json();
+                        })
+                        .then(function(res) {
+                            to(res.status === "complete" ? "taken" : res.status === "screened_out" ? "screened" : "about");
+                        })
+                        .catch(function() {
+                            to("about");
+                        });
                 };
+            }
+
+            function taken() {
+                stage.innerHTML =
+                    '<div class="eyebrow">Thank you</div>' +
+                    '<h2>You have already completed this survey.</h2>' +
+                    '<p class="lede">Each person can take part once, and your earlier response is already recorded. Nothing more is needed from you, and you can close this page.</p>';
             }
 
             /* ---------- submit + results ---------- */
@@ -998,6 +1119,7 @@
                     })
                     .then(function(res) {
                         S.result = res;
+                        clearProgress();
                         store(function(ls) {
                             ls.removeItem("songSurveyBackup_" + S.pid);
                         });
@@ -1051,7 +1173,7 @@
 
             go(store(function(ls) {
                 return ls.getItem(SCREENED_KEY);
-            }) ? "screened" : "welcome");
+            }) ? "screened" : loadProgress() ? "resume" : "welcome");
         })();
     </script>
 </body>

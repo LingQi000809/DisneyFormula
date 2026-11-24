@@ -40,8 +40,12 @@ function onOpen() {
 //   { kind: "trial", pid, trial }  each time a participant clicks "Next excerpt".
 //                                  This is the only time a trial is saved;
 //   { pid, raffle, email, ... }    once at the end (background + raffle, no trials).
+//   { kind: "check", email }       when an email is entered for the raffle. Returns
+//                                  only "complete", "screened_out" or "" (not seen,
+//                                  or only left midway, which writes no row).
 function doPost(e) {
   const d = JSON.parse(e.postData.contents);
+  if (d.kind === 'check') return json_({ status: emailStatus_(d.email) });
   const lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
@@ -58,8 +62,7 @@ function doPost(e) {
       appendParticipant_(now, d, 'screened_out', email, duplicate, false, '');
       return json_({ ok: true });
     }
-    // One raffle entry per email, and none for an email that was screened out
-    // before. "Name+tag@" and Gmail dots count as the same address.
+    // One raffle entry per email, and none for an email that was screened out before.
     // The "correct" total is filled in by Survey → Rescore everyone.
     appendParticipant_(now, d, 'complete', email, duplicate, email !== '' && !duplicate, '');
     return json_({ ok: true, duplicate: duplicate });
@@ -76,12 +79,19 @@ function appendParticipant_(now, d, status, email, duplicate, raffle, correct) {
     d.disney_films, d.musicals, d.us_located, d.timezone || '', d.device || '', correct]);
 }
 
-function emailKey_(e) {
-  const m = String(e || '').trim().toLowerCase().match(/^([^@+]+)(?:\+[^@]*)?@(.+)$/);
-  if (!m) return String(e || '').trim().toLowerCase();
-  const gmail = m[2] === 'gmail.com' || m[2] === 'googlemail.com';
-  return (gmail ? m[1].replace(/\./g, '') : m[1]) + '@' + (gmail ? 'gmail.com' : m[2]);
+// The status of the latest Participants row with this email ("complete" wins).
+function emailStatus_(email) {
+  const k = emailKey_(email);
+  if (!String(email || '').trim()) return '';
+  let status = '';
+  rows_('Participants').forEach(function (r) {
+    if (emailKey_(r[P.email]) === k && status !== 'complete') status = String(r[P.status]);
+  });
+  return status;
 }
+
+// Emails match exactly, ignoring only capitals and surrounding spaces.
+function emailKey_(e) { return String(e || '').trim().toLowerCase(); }
 
 // The title key, read once per request.
 function context_() {
