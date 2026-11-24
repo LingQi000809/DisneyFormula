@@ -8,7 +8,7 @@ cd ExploratoryExperiment/pilot
 python3 prepare_stimuli.py
 ```
 
-This cuts 8 s from each `Start_Timestamp` in `DisneyCorpus/audio_full/` and normalizes every excerpt to the same loudness (−18 LUFS by default). It then writes `excerpts_8s/`, `loudness_report.csv`, `excerpts_8s_anonymized/`, `clips.js` and the two files in `private/`.
+This cuts 8 s from each `Start_Timestamp` in `stimuli_ballad_test_excerpts.csv`. Each song's set comes from the folder its audio is in: `DisneyCorpus/disney_full/` → **disney**, `DisneyCorpus/control_full/` → **control**. The CSV's Origin column isn't used. All excerpts from both sets are normalized to one common loudness (−18 LUFS by default). If any excerpt would clip, the target is lowered for all of them. The script then writes `excerpts_8s/disney/` and `excerpts_8s/control/`, `loudness_report.csv`, `excerpts_8s_anonymized/` (both sets mixed), `clips.js` and the two files in `private/`. A song name must exist in only one of the two folders.
 
 **Titles.** Manually add a row to `song_titles.csv` only for a different name that should also count, such as an original-language title (`Without You` → "Tres Palabras").
 
@@ -23,7 +23,7 @@ This cuts 8 s from each `Start_Timestamp` in `DisneyCorpus/audio_full/` and norm
 
 - Create a blank Google Sheet, then go to **Extensions → Apps Script**. Paste in `Code.gs` and save.
 - In the function dropdown next to **Run** at the top of the editor, choose **setup**, then click **Run**. The first time, choose **Review permissions →** your account **→ Advanced → Go to … → Allow**. Wait for *Execution completed* in the log.
-- Switch back to the browser tab with the **Sheet** (not Apps Script). `setup` has created the tabs **Key, Settings, Participants, Trials** along the bottom. If you don't see them, reload the Sheet.
+- Switch back to the browser tab with the **Sheet** (not Apps Script). `setup` has created the tabs **Key, Participants, Trials** along the bottom. If you don't see them, reload the Sheet.
 - Click the **Key** tab, go to **File → Import → Upload**, choose `private/key.csv`, and pick **Replace current sheet**. This replaces the tab that is selected, so make sure it's Key.
 - Go to **Deploy → New deployment → Web app**. Set Execute as **Me** and access to **Anyone**, then copy the URL. It ends in `/exec`.
 
@@ -65,12 +65,12 @@ Take the survey once, check that the rows appear in the sheet, then delete your 
 
 ## Later
 
-- **Going from the demo to the full survey:** the page currently plays 3 random excerpts per person (`var DEMO_N = 3;` in `index.html`). Set it to `0` to use all excerpts. Delete the demo rows in **Participants** and **Trials** (keep the header row), then commit and push. The Action redeploys the site. Nothing else needs to change.
+- **Going from the demo to the full survey:** the page currently plays 3 random excerpts per person (`var DEMO_N = 3;` in `index.html`). Set it to `0` to use all excerpts. Delete the demo rows in **Participants** and **Trials** (keep the header row; rows saved before the lottery update have a different column layout, so delete those in any case), then commit and push. The Action redeploys the site. Nothing else needs to change.
 
-- **Scores are stored, not recalculated.** Each excerpt is scored once when it's saved (Trials → `correct`). Each participant's total and average time are written when they finish (Participants → `correct`, `avg_response_s`). The leaderboard only reads those Participants columns.
-- To change the time limit, edit **Settings B1** (in seconds). To accept another name, add it to the **Key** tab, and also to `song_titles.csv` so the next import keeps it. **Then run Survey → Rescore everyone** (menu in the Sheet) so existing scores update.
-- The leaderboard shows the top **Settings B2** entries (default 10). A participant ranked lower sees "…" and their own row and rank underneath.
+- **Screening.** The survey starts with background questions. A participant continues only if they are in the US, 18 or older, and their Disney-film and musical answers add up to at least 3 (a range like "3–5" counts as its lower number). This is the same rule as the Qualtrics branch. Anyone else sees a neutral thank-you page and is logged in Participants with `status` = `screened_out`. The page never mentions screening or its criteria. The browser remembers a screened-out visit, so reloading doesn't offer a second try. To test again yourself, open the link with `?reset` at the end.
+- **Correct answers.** Each excerpt is marked correct once, when it's saved (Trials → `correct`), and each participant's total is stored in Participants → `correct`. There is no time limit; `response_ms` and `submit_ms` are stored, so apply any cutoff in the analysis. To accept another name, add it to the **Key** tab and to `song_titles.csv` (so the next import keeps it), then run **Survey → Rescore everyone**.
+- **Lottery.** The lottery question and email come first, before the background questions, so screened-out rows keep the email too. Participants → `lottery` is TRUE for each valid entry: the person completed the survey, gave an email, and that email doesn't appear in any earlier row (`duplicate`), including a screened-out one. A retry after being screened out therefore doesn't count. `Name+tag@…` and Gmail dots count as the same address. To exclude an entry, for example for careless answers, set its `lottery` cell to FALSE. When the survey closes, run **Survey → Draw 3 lottery winners**. The winners go to a **Winners** tab, and each draw replaces the previous one.
 - If you edit `Code.gs`, go to **Deploy → Manage deployments → Edit → New version**. If the update adds columns, run **setup** again once; it only rewrites the header rows and keeps your data.
 - **Changing excerpts after launch:** re-run the script, re-import `key.csv`, and redeploy (step 4). Existing excerpts keep their `clip_…` IDs, which are read from `clip_map.csv`, so responses already collected stay valid. Don't delete `private/`.
-- **Data:** each excerpt's response is saved to the Trials tab as soon as the participant clicks **Next excerpt**, so you keep partial data from people who quit early. Their `pid` has no row in Participants. Only finished participants appear on the leaderboard.
-- **Analysis:** the Trials tab stores `clip_id`. Join it with `clip_map.csv` to get the song names.
+- **Data:** each excerpt's response is saved to the Trials tab as soon as the participant clicks **Next excerpt**, so you keep partial data from people who quit early. Their `pid` has no row in Participants. Only finished participants can enter the lottery.
+- **Analysis:** the Trials tab stores `clip_id`. Join it with `clip_map.csv` to get the set (`disney` / `control`) and song name.

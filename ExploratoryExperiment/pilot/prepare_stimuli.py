@@ -1,29 +1,37 @@
 """Cut, loudness-normalize and export song excerpts for the recognition survey.
 
+One CSV (stimuli_ballad_test_excerpts.csv) lists every song. Each song's set
+comes from the folder its audio file is in (see SETS below):
+    disney   DisneyCorpus/disney_full/
+    control  DisneyCorpus/control_full/
+(The CSV's Origin column isn't used, since it's only filled on the first
+row of each block.)
+
 Step 1 - cut
     For each CSV row, the audio file is looked up by the value in the
-    soundtrack column (e.g. "BabyMine" -> audio_dir/BabyMine.mp3), and an
-    excerpt of `--duration` seconds is cut starting at Start_Timestamp
+    soundtrack/name column (e.g. "BabyMine" -> disney_full/BabyMine.mp3), and
+    an excerpt of `--duration` seconds is cut starting at Start_Timestamp
     ("m:ss"). A cell may hold several timestamps ("1:55, 2:34"); each becomes
     its own excerpt with a numbered suffix (ForTheFirstTimeInForever_1, _2).
     Short linear fades are applied at both ends so excerpts don't click.
 
-Step 2 - loudness normalization (ITU-R BS.1770 / EBU R128)
+Step 2 - loudness normalization (ITU-R BS.1770 / EBU R128), across ALL sets
     Each excerpt's integrated loudness (LUFS) and true peak (dBTP) are
     measured with ffmpeg's ebur128 filter, and a single gain is applied so
-    every excerpt lands at the same loudness. If reaching `--target-lufs`
-    would push any excerpt's true peak above `--peak-ceiling`, the common
-    target is lowered for ALL excerpts so they stay equally loud without
-    clipping or limiting. Written files are re-measured and logged to
-    loudness_report.csv (next to this script).
+    every excerpt, Disney and control alike, lands at the same loudness. If
+    reaching `--target-lufs` would push any excerpt's true peak above
+    `--peak-ceiling`, the common target is lowered for ALL excerpts so they
+    stay equally loud without clipping or limiting. Written files are
+    re-measured and logged to loudness_report.csv (next to this script).
+    Named excerpts go to excerpts_8s/<set>/.
 
 Step 3 - export for the survey site
-    Normalized excerpts are copied to `excerpts_8s_anonymized/` under random IDs
-    (clip_3f9a1c2e.mp3) so titles can't be read from filenames, and
-    clips.js is rewritten with that list. Two private files are written to
-    private/ (git-ignored; never upload them):
+    Normalized excerpts from all sets are copied to `excerpts_8s_anonymized/`
+    under random IDs (clip_3f9a1c2e.mp3) so titles can't be read from
+    filenames, and clips.js is rewritten with that list. Two private files
+    are written to private/ (git-ignored; never upload them):
       key.csv       clip_id, title, alternates -> import into the Sheet's Key tab
-      clip_map.csv  clip_id -> excerpt name, source file, start time
+      clip_map.csv  clip_id -> set, excerpt name, source file, start time
     IDs are reused from an existing clip_map.csv, so re-running the script
     doesn't invalidate responses already collected.
 
@@ -49,16 +57,22 @@ import soundfile as sf
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
+CORPUS = REPO / "DisneyCorpus"
 
 DEFAULT_CSV = HERE / "stimuli_ballad_test_excerpts.csv"
+SETS = {                      # set name -> folder with its full songs
+    "disney": CORPUS / "disney_full",
+    "control": CORPUS / "control_full",
+}
+
 DEFAULT_TITLES = HERE / "song_titles.csv"
-DEFAULT_AUDIO_DIR = REPO / "DisneyCorpus" / "audio_full"
-DEFAULT_OUT_DIR = HERE / "excerpts_8s"
+DEFAULT_OUT_DIR = HERE / "excerpts_8s"          # named excerpts, one subfolder per set
 DEFAULT_REPORT = HERE / "loudness_report.csv"
 DEFAULT_SITE_DIR = HERE
-DEFAULT_PRIVATE_DIR = HERE / "private"   # git-ignored
+DEFAULT_PRIVATE_DIR = HERE / "private"          # git-ignored
 
-NAME_COL = "Soundtrack (with Youtube Link)"
+# first of these columns found in a CSV holds the song/file name
+NAME_COLS = ("Soundtrack (with Youtube Link)", "Soundtrack", "Song", "Name", "File")
 START_COL = "Start_Timestamp"
 AUDIO_EXTENSIONS = (".mp3", ".wav", ".flac", ".m4a", ".aiff", ".ogg")
 
@@ -112,6 +126,55 @@ def cut_excerpt(audio_path, start_s, duration_s, fade_ms=20.0):
     return audio, sr
 
 
+def index_sets(sets):
+    """Map normalized name -> (set name, path) across all set folders."""
+    index = {}
+    for set_name, folder in sets.items():
+        if not Path(folder).is_dir():
+            raise SystemExit(f"Audio folder not found: {folder}")
+        for name, path in index_audio_files(folder).items():
+            if name in index:
+                raise SystemExit(f"'{path.stem}' is in both {index[name][0]} and {set_name}; "
+                                 "rename one so each song has one home")
+            index[name] = (set_name, path)
+    return index
+
+
+def cut_all(csv_path, sets, duration, fade_ms):
+    """Cut every excerpt listed in the CSV.
+
+    Returns (excerpts, meta, missing, failed), keyed by "set/stem"."""
+    files = index_sets(sets)
+    excerpts, meta, missing, failed = {}, {}, [], []
+
+    with open(csv_path, newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        name_col = next((c for c in NAME_COLS if c in (reader.fieldnames or [])), None)
+        if name_col is None or START_COL not in (reader.fieldnames or []):
+            raise SystemExit(f"{csv_path.name}: needs a name column ({' / '.join(NAME_COLS)}) "
+                             f"and a {START_COL} column")
+        for row in reader:
+            name = nfc((row[name_col] or "").strip())
+            stamps = [s.strip() for s in (row[START_COL] or "").split(",") if s.strip()]
+            if not name or not stamps:
+                continue
+            found = files.get(name.lower())
+            if found is None:
+                missing.append(name)
+                continue
+            set_name, src = found
+            for i, ts in enumerate(stamps, start=1):
+                stem = name if len(stamps) == 1 else f"{name}_{i}"
+                key = f"{set_name}/{stem}"
+                try:
+                    excerpts[key] = cut_excerpt(src, parse_timestamp(ts), duration, fade_ms=fade_ms)
+                    meta[key] = {"set": set_name, "stem": stem, "base": name,
+                                 "source": src.name, "start": ts}
+                except Exception as e:
+                    failed.append(f"{key}: {e}")
+    return excerpts, meta, missing, failed
+
+
 # --------------------------------------------------------------------------
 # Loudness (ffmpeg ebur128: BS.1770 K-weighted, gated integrated loudness)
 # --------------------------------------------------------------------------
@@ -151,13 +214,13 @@ def measure_file(path):
 
 def choose_target(measured, target_lufs, peak_ceiling):
     """Highest common loudness <= target_lufs that keeps every true peak
-    under the ceiling. Returns (target, limiting_stem_or_None)."""
+    under the ceiling. Returns (target, limiting_key_or_None)."""
     target, limiter = target_lufs, None
-    for stem, (lufs, tp) in measured.items():
+    for key, (lufs, tp) in measured.items():
         # gain that puts this excerpt's peak exactly at the ceiling
         max_target = lufs + (peak_ceiling - tp)
         if max_target < target:
-            target, limiter = max_target, stem
+            target, limiter = max_target, key
     return target, limiter
 
 
@@ -186,15 +249,22 @@ def title_from_name(name):
 
 
 def load_clip_map(path):
-    """excerpt stem -> clip_id, from a previous run."""
+    """"set/stem" -> clip_id, from a previous run.
+
+    Maps written before sets existed have no 'set' column; those rows were all
+    Disney excerpts, so they keep their IDs as disney/<stem>."""
     if not Path(path).exists():
         return {}
+    ids = {}
     with open(path, newline="", encoding="utf-8") as f:
-        return {nfc(r["excerpt"]): r["clip_id"] for r in csv.DictReader(f)}
+        for r in csv.DictReader(f):
+            set_name = (r.get("set") or "disney").strip()
+            ids[f"{set_name}/{nfc(r['excerpt'])}"] = r["clip_id"]
+    return ids
 
 
 def export_site(written, meta, site_dir, private_dir, titles_path):
-    """written: stem -> normalized file path. meta: stem -> (source, start, base)."""
+    """written: key -> normalized file path. meta: key -> dict(set, stem, base, source, start)."""
     audio_dir = site_dir / "excerpts_8s_anonymized"
     audio_dir.mkdir(parents=True, exist_ok=True)
     private_dir.mkdir(parents=True, exist_ok=True)
@@ -202,20 +272,20 @@ def export_site(written, meta, site_dir, private_dir, titles_path):
     map_path = private_dir / "clip_map.csv"
     ids = load_clip_map(map_path)
     used = set(ids.values())
-    for stem in written:
-        if stem not in ids:
+    for key in written:
+        if key not in ids:
             cid = f"clip_{secrets.token_hex(4)}"
             while cid in used:
                 cid = f"clip_{secrets.token_hex(4)}"
-            ids[stem] = cid
+            ids[key] = cid
             used.add(cid)
 
     # replace previously exported clips so removed excerpts don't linger
     for old in audio_dir.glob("clip_*"):
         old.unlink()
     files = []
-    for stem, path in written.items():
-        dest = audio_dir / f"{ids[stem]}{path.suffix}"
+    for key, path in written.items():
+        dest = audio_dir / f"{ids[key]}{path.suffix}"
         shutil.copyfile(path, dest)
         files.append(dest.name)
     files.sort()
@@ -233,22 +303,30 @@ def export_site(written, meta, site_dir, private_dir, titles_path):
     with open(private_dir / "key.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["clip_id", "title", "alternate 1", "alternate 2", "alternate 3"])
-        for stem in sorted(written, key=lambda s: ids[s]):
-            base = meta[stem][2]
+        for key in sorted(written, key=lambda k: ids[k]):
+            base = meta[key]["base"]
             row = titles.get(base)
             if not row:
                 row = [title_from_name(base)]
                 guessed.append(row[0])
-            w.writerow([ids[stem]] + row)
+            w.writerow([ids[key]] + row)
 
+    # keep entries from earlier runs (e.g. a set not processed this time) so
+    # their IDs stay reserved
     with open(map_path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["clip_id", "excerpt", "source", "start"])
-        for stem in sorted(ids, key=lambda s: ids[s]):
-            src, start = meta[stem][:2] if stem in meta else ("", "")
-            w.writerow([ids[stem], stem, src, start])
+        w.writerow(["clip_id", "set", "excerpt", "source", "start"])
+        for key in sorted(ids, key=lambda k: ids[k]):
+            set_name, stem = key.split("/", 1)
+            m = meta.get(key, {})
+            w.writerow([ids[key], set_name, stem, m.get("source", ""), m.get("start", "")])
 
-    print(f"\nSite: {len(files)} anonymized clips in {audio_dir}, list in {site_dir / 'clips.js'}")
+    by_set = {}
+    for key in written:
+        by_set[meta[key]["set"]] = by_set.get(meta[key]["set"], 0) + 1
+    print(f"\nSite: {len(files)} anonymized clips "
+          f"({', '.join(f'{n} {s}' for s, n in by_set.items())}) in {audio_dir}")
+    print(f"      list in {site_dir / 'clips.js'}")
     print(f"Private (do not upload): {private_dir / 'key.csv'}, {map_path}")
     if guessed:
         print(f"Titles from file names (not in {Path(titles_path).name}): {', '.join(guessed)}")
@@ -261,13 +339,13 @@ def main():
     parser.add_argument("--csv", default=DEFAULT_CSV, type=Path)
     parser.add_argument("--titles", default=DEFAULT_TITLES, type=Path,
                         help="excerpt -> song title + accepted alternates")
-    parser.add_argument("--audio-dir", default=DEFAULT_AUDIO_DIR, type=Path)
-    parser.add_argument("-o", "--output-dir", default=DEFAULT_OUT_DIR, type=Path)
+    parser.add_argument("-o", "--output-dir", default=DEFAULT_OUT_DIR, type=Path,
+                        help="named excerpts go to <output-dir>/<set>/")
     parser.add_argument("--report", default=DEFAULT_REPORT, type=Path)
     parser.add_argument("--site-dir", default=DEFAULT_SITE_DIR, type=Path,
                         help="folder with index.html; gets excerpts_8s_anonymized/ and clips.js")
     parser.add_argument("--private-dir", default=DEFAULT_PRIVATE_DIR, type=Path,
-                        help="where key.csv and clip_map.csv go (keep outside the repo)")
+                        help="where key.csv and clip_map.csv go (git-ignored)")
     parser.add_argument("--duration", default=8.0, type=float, help="seconds")
     parser.add_argument("--fade-ms", default=20.0, type=float,
                         help="fade in/out length (0 to disable)")
@@ -289,42 +367,21 @@ def main():
         raise SystemExit("ffmpeg not found on PATH (needed for loudness measurement)")
 
     # ---- 1. cut ---------------------------------------------------------
-    files = index_audio_files(args.audio_dir)
-    excerpts = {}           # stem -> (audio, sr)
-    meta = {}               # stem -> (source file, timestamp, base name)
-    missing, failed = [], []
-
-    with open(args.csv, newline="", encoding="utf-8-sig") as f:
-        for row in csv.DictReader(f):
-            name = nfc(row[NAME_COL].strip())
-            stamps = [s.strip() for s in row[START_COL].split(",") if s.strip()]
-            if not name or not stamps:
-                continue
-            src = files.get(name.lower())
-            if src is None:
-                missing.append(name)
-                continue
-            for i, ts in enumerate(stamps, start=1):
-                stem = name if len(stamps) == 1 else f"{name}_{i}"
-                try:
-                    excerpts[stem] = cut_excerpt(src, parse_timestamp(ts), args.duration,
-                                                 fade_ms=args.fade_ms)
-                    meta[stem] = (src.name, ts, name)
-                except Exception as e:
-                    failed.append(f"{stem}: {e}")
-
-    print(f"Cut {len(excerpts)} excerpts of {args.duration:g} s")
+    excerpts, meta, missing, failed = cut_all(args.csv, SETS, args.duration, args.fade_ms)
+    for set_name in SETS:
+        n = sum(1 for m in meta.values() if m["set"] == set_name)
+        print(f"{set_name}: cut {n} excerpts of {args.duration:g} s")
     if not excerpts:
         raise SystemExit("Nothing to write.")
 
-    # ---- 2. measure + choose a common target ----------------------------
-    gains = {stem: 0.0 for stem in excerpts}
+    # ---- 2. measure + choose one common target across all sets ----------
+    gains = {key: 0.0 for key in excerpts}
     before = {}
     if not args.no_normalize:
-        for stem, (audio, sr) in excerpts.items():
-            before[stem] = measure_array(audio, sr)
+        for key, (audio, sr) in excerpts.items():
+            before[key] = measure_array(audio, sr)
 
-        silent = [s for s, (l, _) in before.items() if not np.isfinite(l)]
+        silent = [k for k, (l, _) in before.items() if not np.isfinite(l)]
         if silent:
             raise SystemExit(f"Silent excerpt(s), check timestamps: {', '.join(silent)}")
 
@@ -333,33 +390,35 @@ def main():
             print(f"Target lowered from {args.target_lufs:g} to {target:.1f} LUFS so "
                   f"'{limiter}' stays under {args.peak_ceiling:g} dBTP")
         else:
-            print(f"Target {target:.1f} LUFS")
-        gains = {s: target - l for s, (l, _) in before.items()}
+            print(f"Target {target:.1f} LUFS (all sets)")
+        gains = {k: target - l for k, (l, _) in before.items()}
 
     # ---- 3. apply gain + write -----------------------------------------
-    args.output_dir.mkdir(parents=True, exist_ok=True)
     report, written = [], {}
-    for stem, (audio, sr) in excerpts.items():
-        out = args.output_dir / f"{stem}.{args.format}"
-        g = gains[stem]
+    for key, (audio, sr) in excerpts.items():
+        m = meta[key]
+        out_dir = args.output_dir / m["set"]
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out = out_dir / f"{m['stem']}.{args.format}"
+        g = gains[key]
         sf.write(out, audio * (10 ** (g / 20)), sr)
-        written[stem] = out
+        written[key] = out
 
         if not args.no_normalize:
             l_after, tp_after = measure_file(out)
-            l0, tp0 = before[stem]
+            l0, tp0 = before[key]
             report.append({
-                "excerpt": out.name, "source": meta[stem][0], "start": meta[stem][1],
+                "set": m["set"], "excerpt": out.name, "source": m["source"], "start": m["start"],
                 "lufs_before": f"{l0:.1f}", "true_peak_before": f"{tp0:.1f}",
                 "gain_db": f"{g:+.1f}",
                 "lufs_after": f"{l_after:.1f}", "true_peak_after": f"{tp_after:.1f}",
             })
-            print(f"  {out.name:36s} {l0:6.1f} -> {l_after:6.1f} LUFS  "
+            print(f"  {key:44s} {l0:6.1f} -> {l_after:6.1f} LUFS  "
                   f"(gain {g:+5.1f} dB, peak {tp_after:5.1f} dBTP)")
         else:
-            print(f"  {out.name}")
+            print(f"  {key}")
 
-    print(f"\n{len(written)} excerpts written to {args.output_dir}")
+    print(f"\n{len(written)} excerpts written to {args.output_dir}/<set>/")
 
     if report:
         with open(args.report, "w", newline="", encoding="utf-8") as f:

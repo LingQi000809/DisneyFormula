@@ -32,7 +32,6 @@
             --prize-line: #fbdfae;
             --prize-ink: #b4600c;
             --prize-chip: #ffe9c4;
-            --me: #fff4dd;
             --bad: #b3261e;
             --warn: #a5561c;
             --f-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
@@ -55,7 +54,6 @@
                 --prize-line: #5e4724;
                 --prize-ink: #ffc978;
                 --prize-chip: #4a3820;
-                --me: #3a3020;
                 --bad: #f28b82;
                 --warn: #f0a868;
                 color-scheme: dark;
@@ -484,87 +482,6 @@
             color: var(--warn);
         }
         
-        .score {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 0.625rem;
-        }
-        
-        .score div {
-            background: var(--sunk);
-            border-radius: 12px;
-            padding: 0.875rem;
-        }
-        
-        .score b {
-            display: block;
-            font: 700 1.875rem/1.1 var(--f-display);
-            margin-top: 0.25rem;
-        }
-        
-        .board {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9062rem;
-        }
-        
-        .board th {
-            text-align: left;
-            font-weight: 600;
-            color: var(--muted);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-            padding: 0.375rem 0.5rem;
-            border-bottom: 1px solid var(--line);
-        }
-        
-        .board td {
-            padding: 0.5625rem 0.5rem;
-            border-bottom: 1px solid var(--line);
-            font-variant-numeric: tabular-nums;
-        }
-        
-        .board .n {
-            text-align: right;
-        }
-        
-        .board tr.me td {
-            background: var(--me);
-            font-weight: 600;
-        }
-        
-        .board th button {
-            all: unset;
-            cursor: pointer;
-            display: inline-flex;
-            gap: 0.25rem;
-            align-items: center;
-        }
-        
-        .board th button:focus-visible {
-            outline: 2px solid var(--gold);
-            outline-offset: 2px;
-            border-radius: 3px;
-        }
-        
-        .board th[aria-sort="ascending"] button,
-        .board th[aria-sort="descending"] button {
-            color: var(--accent);
-        }
-        
-        .board .ar {
-            font-size: 0.625rem;
-            opacity: .8;
-        }
-
-        .board tr.gap td {
-            text-align: center;
-            color: var(--muted);
-            padding: 2px 0.5rem;
-            letter-spacing: .2em;
-        }
-        
         .spin {
             width: 1.75rem;
             height: 1.75rem;
@@ -608,6 +525,11 @@
                 t: "No, I don't know this song."
             }];
             var COUNTS = ["0", "1", "2", "3–5", "6–10", "11–20", "21+"];
+            /* Screening: located in the US, 18+, and Disney films + musicals >= 3
+               (using each answer's lower bound, e.g. "3–5" counts as 3). Same rule
+               as the Qualtrics branch. The criteria are never shown to participants. */
+            var MIN_EXPOSURE = 3;
+            var SCREENED_KEY = "songSurveyScreened";
             var stage = document.getElementById("stage");
 
             function $(id) {
@@ -625,6 +547,18 @@
                 });
             }
 
+            function store(fn) {
+                try {
+                    return fn(window.localStorage);
+                } catch (e) {
+                    return null;
+                }
+            }
+            /* Add ?reset to the link to clear the screened-out flag (for testing). */
+            if (/[?&]reset\b/.test(location.search)) store(function(ls) {
+                ls.removeItem(SCREENED_KEY);
+            });
+
             for (var i = FILES.length - 1; i > 0; i--) {
                 var j = Math.floor(Math.random() * (i + 1));
                 var x = FILES[i];
@@ -638,21 +572,17 @@
                 screen: "welcome",
                 k: 0,
                 pid: "p_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-                who: {
-                    mode: "",
-                    name: "",
-                    email: ""
-                },
                 trials: [],
                 about: {
+                    us: "",
                     age: "",
                     gender: "",
                     disney: "",
                     musicals: ""
                 },
-                sort: {
-                    key: "correct",
-                    dir: -1
+                draw: {
+                    mode: "",
+                    email: ""
                 },
                 result: null
             };
@@ -672,10 +602,11 @@
                 var total = FILES.length + 3,
                     step = {
                         welcome: 0,
-                        who: 1,
-                        trial: 2 + S.k,
-                        about: 2 + FILES.length,
-                        results: total
+                        lottery: 1,
+                        about: 2,
+                        trial: 3 + S.k,
+                        results: total,
+                        screened: total
                     }[S.screen];
                 $("prog").style.width = (step / total * 100) + "%";
             }
@@ -685,10 +616,11 @@
                 progress();
                 ({
                     welcome: welcome,
-                    who: who,
-                    trial: trial,
                     about: about,
-                    results: results
+                    trial: trial,
+                    lottery: lottery,
+                    results: results,
+                    screened: screened
                 })[screen]();
                 stage.classList.remove("enter");
                 void stage.offsetWidth; /* restart the animation */
@@ -703,7 +635,7 @@
             }
 
             window.addEventListener("beforeunload", function(e) {
-                if (S.screen === "trial" || S.screen === "about") {
+                if (S.screen === "trial") {
                     e.preventDefault();
                     e.returnValue = "";
                 }
@@ -719,72 +651,90 @@
                     '<ul class="rules">' +
                     '<li><span class="k">1</span><span><b>Listen and answer.</b>For each 8-second excerpt, tell me whether you know the song.</span></li>' +
                     '<li><span class="k">2</span><span><b>Respond based on your first impression.</b>You may answer while the excerpt is still playing.</span></li>' +
-                    '<li><span class="k">3</span><span><b>Answer honestly.</b>Please don\'t look anything up, use song-identification apps, or ask anyone nearby. An honest "no" is just as useful to me as a "yes."</span></li>' +
+                    '<li><span class="k">3</span><span><b>Answer honestly.</b>Please don\'t look anything up, use song-identification apps, or ask anyone nearby. Your answers don\'t affect your chances in the lottery, and an honest "no" is just as useful to me as a "yes."</span></li>' +
                     '</ul>' +
-                    '<div class="prize"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3c-.6.8-.6 1.7 0 2.5M11 3c-.6.8-.6 1.7 0 2.5"/><path d="M3 21h14"/></svg></span>' +
-                    '<strong>Prize: coffee or boba tea for the 3 top scorers</strong>' +
-                    '<p>On the next page, you can opt out of scoring and the prize.</p>' +
-                    '<p>Scores are based on how many songs you name correctly and how quickly you respond. Response times are recorded in the background, starting when you first press play, and answers that take too long don\'t count.</p></div>' +
+                    '<div class="prize"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12"/><path d="M12 8c-1.5-3-5-3.5-5-1.25S10 8 12 8zM12 8c1.5-3 5-3.5 5-1.25S14 8 12 8z"/></svg></span>' +
+                    '<strong>Lottery: three $20 gift cards</strong>' +
+                    '<p>Everyone who completes the survey can enter. You can sign up with your email address on the next page. One entry per person.</p>' +
+                    '<p>Three winners are drawn at random after the survey closes and notified by email.</p></div>' +
                     (FILES.length ? "" : '<p class="err">No excerpts are set up yet (clips.js is empty).</p>') +
                     '<div class="actions"><span></span><button class="btn" id="next" type="button"' + (FILES.length ? "" : " disabled") + '>Begin</button></div>';
                 $("next").onclick = function() {
-                    go("who");
+                    go("lottery");
                 };
             }
 
-            /* ---------- leaderboard opt-in ---------- */
-            function who() {
-                var w = S.who;
+            /* ---------- about you (screening + demographics) ---------- */
+            function about() {
+                var a = S.about;
                 stage.innerHTML =
                     '<div class="eyebrow">Before you begin</div>' +
-                    '<h2>Would you like to appear on the leaderboard?</h2>' +
-                    '<p class="lede">You will see your own score either way. Only participants on the leaderboard are eligible for the prize.</p>' +
-                    '<div class="opts" role="radiogroup" aria-label="Leaderboard">' +
-                    opt("who", "named", "Yes, display my name", "Eligible for the prize", w.mode === "named") +
-                    opt("who", "anon", "No, participate anonymously", "Not eligible for the prize", w.mode === "anon") +
-                    '</div>' +
-                    '<div class="field" id="nameBox"' + (w.mode === "named" ? "" : " hidden") + ' style="gap:16px">' +
-                    '<div class="field"><label for="f-name">Display name <span class="req">*</span></label><span class="hint">This name will appear on the leaderboard. Up to 20 characters.</span><input type="text" id="f-name" autocomplete="nickname" maxlength="20" value="' + esc(w.name) + '"></div>' +
-                    '<div class="field"><label for="f-email">Email address <span class="req">*</span></label><span class="hint">Used only to contact prize winners, and never displayed. If you take the survey more than once, only your first attempt counts for the prize.</span><input type="email" id="f-email" autocomplete="email" value="' + esc(w.email) + '"><span class="err" id="emErr" hidden>Please enter a valid email address.</span></div>' +
-                    '</div>' +
-                    '<div class="actions"><button class="btn ghost" type="button" id="back">Back</button><button class="btn" id="next" type="button">Continue to the first excerpt</button></div>';
-                var nm = $("f-name"),
-                    em = $("f-email");
-
-                function okEmail() {
-                    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(w.email.trim());
-                }
+                    '<h2>About you</h2>' +
+                    '<div class="field"><span class="lab" id="l-us">Are you currently located in the United States? <span class="req">*</span></span><div class="opts row" role="radiogroup" aria-labelledby="l-us">' + ["Yes", "No"].map(function(v) {
+                        return opt("us", v, v, "", a.us === v);
+                    }).join("") + '</div></div>' +
+                    '<div class="field"><label for="f-age">What is your age? <span class="req">*</span></label><input type="number" id="f-age" min="1" max="120" inputmode="numeric" style="max-width:7.5rem" value="' + esc(a.age) + '"></div>' +
+                    '<div class="field"><span class="lab" id="l-g">What is your gender? <span class="req">*</span></span><div class="opts" role="radiogroup" aria-labelledby="l-g">' + ["Female", "Male", "Non-binary", "Prefer not to say"].map(function(g) {
+                        return opt("gender", g, g, "", a.gender === g);
+                    }).join("") + '</div></div>' +
+                    '<div class="field"><span class="lab" id="l-d">Approximately how many Disney animated films have you watched or know the songs from? <span class="req">*</span></span>' +
+                    '<span class="hint">Count only films made by Walt Disney Animation Studios (not Marvel, Pixar, or live-action films).</span>' +
+                    '<div class="opts row" role="radiogroup" aria-labelledby="l-d">' + COUNTS.map(function(v) {
+                        return opt("disney", v, v, "", a.disney === v);
+                    }).join("") + '</div></div>' +
+                    '<div class="field"><span class="lab" id="l-m">Approximately how many non-Disney musicals have you watched or know the songs from? <span class="req">*</span></span>' +
+                    '<span class="hint">A musical is a stage show or film in which the story is told largely through songs.</span>' +
+                    '<div class="opts row" role="radiogroup" aria-labelledby="l-m">' + COUNTS.map(function(v) {
+                        return opt("musicals", v, v, "", a.musicals === v);
+                    }).join("") + '</div></div>' +
+                    '<div class="actions"><button class="btn ghost" type="button" id="back">Back</button><button class="btn" id="next" type="button">Continue</button></div>';
+                var age = $("f-age");
 
                 function check() {
-                    $("next").disabled = !(w.mode === "anon" || (w.mode === "named" && w.name.trim() && okEmail()));
+                    $("next").disabled = !(a.us && a.age && +a.age >= 1 && +a.age <= 120 && a.gender && a.disney && a.musicals);
                 }
-                bindOpts("who", function(v) {
-                    w.mode = v;
-                    $("nameBox").hidden = v !== "named";
+                age.oninput = function() {
+                    a.age = age.value;
                     check();
+                };
+                ["us", "gender", "disney", "musicals"].forEach(function(g) {
+                    bindOpts(g, function(v) {
+                        a[g] = v;
+                        check();
+                    });
                 });
-                nm.oninput = function() {
-                    w.name = nm.value;
-                    check();
-                };
-                em.oninput = function() {
-                    w.email = em.value;
-                    $("emErr").hidden = true;
-                    check();
-                };
-                em.onblur = function() {
-                    $("emErr").hidden = !w.email.trim() || okEmail();
-                };
                 check();
                 $("back").onclick = function() {
-                    go("welcome");
+                    go("lottery");
                 };
                 $("next").onclick = function() {
-                    S.k = 0;
-                    audioFor(0);
-                    audioFor(1);
-                    go("trial");
+                    if (eligible()) {
+                        S.k = 0;
+                        audioFor(0);
+                        audioFor(1);
+                        go("trial");
+                    } else {
+                        store(function(ls) {
+                            ls.setItem(SCREENED_KEY, "1");
+                        });
+                        post(JSON.stringify(Object.assign({
+                            kind: "screened"
+                        }, background(), lotteryInfo())));
+                        go("screened");
+                    }
                 };
+            }
+
+            function eligible() {
+                var a = S.about;
+                return a.us === "Yes" && +a.age >= 18 && parseInt(a.disney, 10) + parseInt(a.musicals, 10) >= MIN_EXPOSURE;
+            }
+
+            function screened() {
+                stage.innerHTML =
+                    '<div class="eyebrow">Thank you</div>' +
+                    '<h2>Thank you for your interest.</h2>' +
+                    '<p class="lede">This study is looking for listeners with particular backgrounds, and based on your answers, you are not in the group needed this time. Nothing more is needed from you, and you can close this page.</p>';
             }
 
             /* ---------- trial ---------- */
@@ -822,7 +772,7 @@
                     '<div class="field" id="box-title" hidden><label for="f-title">Song title <span class="req">*</span></label><input type="text" id="f-title" autocomplete="off" spellcheck="false"></div>' +
                     '<div class="field" id="box-recall" hidden><label for="f-recall">What clues can you remember? <span class="req">*</span></label><span class="hint">For example, the film or musical it comes from, the singer, or a lyric.</span><input type="text" id="f-recall" autocomplete="off"></div>' +
                     '<p class="flag" id="flag" hidden></p>' +
-                    '<div class="actions"><span></span><button class="btn" id="next" type="button" disabled>' + (k + 1 === FILES.length ? "Continue" : "Next excerpt") + '</button></div>';
+                    '<div class="actions"><span></span><button class="btn" id="next" type="button" disabled>' + (k + 1 === FILES.length ? "Submit" : "Next excerpt") + '</button></div>';
                 var ti = $("f-title"),
                     re = $("f-recall"),
                     pb = $("play");
@@ -919,100 +869,122 @@
                     if (k + 1 < FILES.length) {
                         S.k = k + 1;
                         go("trial");
-                    } else go("about");
+                    } else go("results");
                 };
             }
 
-            /* ---------- about ---------- */
-            function about() {
-                var a = S.about;
+            /* ---------- lottery entry ---------- */
+            function lottery() {
+                var w = S.draw;
                 stage.innerHTML =
-                    '<div class="eyebrow">Final questions</div>' +
-                    '<h2>About you</h2>' +
-                    '<div class="field"><label for="f-age">What is your age? <span class="req">*</span></label><input type="number" id="f-age" min="18" max="99" inputmode="numeric" style="max-width:120px" value="' + esc(a.age) + '"></div>' +
-                    '<div class="field"><span class="lab" id="l-g">What is your gender? <span class="req">*</span></span><div class="opts" role="radiogroup" aria-labelledby="l-g">' + ["Female", "Male", "Non-binary", "Prefer not to say"].map(function(g) {
-                        return opt("gender", g, g, "", a.gender === g);
-                    }).join("") + '</div></div>' +
-                    '<div class="field"><span class="lab" id="l-d">Approximately how many Disney animated films have you watched or know the songs from? <span class="req">*</span></span>' +
-                    '<span class="hint">Count only films made by Walt Disney Animation Studios (not Marvel, Pixar, or live-action films).</span>' +
-                    '<div class="opts row" role="radiogroup" aria-labelledby="l-d">' + COUNTS.map(function(v) {
-                        return opt("disney", v, v, "", a.disney === v);
-                    }).join("") + '</div></div>' +
-                    '<div class="field"><span class="lab" id="l-m">Approximately how many non-Disney musicals have you watched or know the songs from? <span class="req">*</span></span>' +
-                    '<span class="hint">A musical is a stage show or film in which the story is told largely through songs.</span>' +
-                    '<div class="opts row" role="radiogroup" aria-labelledby="l-m">' + COUNTS.map(function(v) {
-                        return opt("musicals", v, v, "", a.musicals === v);
-                    }).join("") + '</div></div>' +
-                    '<div class="actions"><span></span><button class="btn" id="next" type="button">Submit and view results</button></div>';
-                var age = $("f-age");
+                    '<div class="eyebrow">Before you begin</div>' +
+                    '<h2>Would you like to enter the lottery?</h2>' +
+                    '<p class="lede">Three participants who complete the survey will be drawn at random to receive a $20 gift card. Your answers don\'t affect your chances.</p>' +
+                    '<div class="opts" role="radiogroup" aria-label="Lottery">' +
+                    opt("draw", "yes", "Yes, enter me in the lottery", "", w.mode === "yes") +
+                    opt("draw", "no", "No, thanks", "", w.mode === "no") +
+                    '</div>' +
+                    '<div class="field" id="emBox"' + (w.mode === "yes" ? "" : " hidden") + '><label for="f-email">Email address <span class="req">*</span></label><span class="hint">Used only to contact the winners. One entry per person; repeat entries with the same email don\'t count.</span><input type="email" id="f-email" autocomplete="email" value="' + esc(w.email) + '"><span class="err" id="emErr" hidden>Please enter a valid email address.</span></div>' +
+                    '<div class="actions"><button class="btn ghost" type="button" id="back">Back</button><button class="btn" id="next" type="button">Continue</button></div>';
+                var em = $("f-email");
+
+                function okEmail() {
+                    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(w.email.trim());
+                }
 
                 function check() {
-                    $("next").disabled = !(a.age && +a.age >= 18 && +a.age <= 120 && a.gender && a.disney && a.musicals);
+                    $("next").disabled = !(w.mode === "no" || (w.mode === "yes" && okEmail()));
                 }
-                age.oninput = function() {
-                    a.age = age.value;
+                bindOpts("draw", function(v) {
+                    w.mode = v;
+                    $("emBox").hidden = v !== "yes";
+                    check();
+                    if (v === "yes") em.focus();
+                });
+                em.oninput = function() {
+                    w.email = em.value;
+                    $("emErr").hidden = true;
                     check();
                 };
-                bindOpts("gender", function(v) {
-                    a.gender = v;
-                    check();
-                });
-                bindOpts("disney", function(v) {
-                    a.disney = v;
-                    check();
-                });
-                bindOpts("musicals", function(v) {
-                    a.musicals = v;
-                    check();
-                });
+                em.onblur = function() {
+                    $("emErr").hidden = !w.email.trim() || okEmail();
+                };
                 check();
+                $("back").onclick = function() {
+                    go("welcome");
+                };
                 $("next").onclick = function() {
-                    go("results");
+                    go("about");
                 };
             }
 
             /* ---------- submit + results ---------- */
-            /* Save each excerpt's response as soon as "Next" is clicked, so data from
-               people who quit early is kept. Fire-and-forget: if it fails, the final
-               submission sends it again and the server skips duplicates. */
-            function saveTrial(t) {
-                if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(window.SCRIPT_URL || "")) return;
+            function connected() {
+                return /^https:\/\/script\.google(usercontent)?\.com\//.test(window.SCRIPT_URL || "");
+            }
+
+            /* Fire-and-forget POST (used for each excerpt and for screened-out visits). */
+            function post(body) {
+                if (!connected()) return;
                 try {
                     fetch(window.SCRIPT_URL, {
                         method: "POST",
-                        body: JSON.stringify({
-                            kind: "trial",
-                            pid: S.pid,
-                            trial: t
-                        }),
+                        body: body,
                         keepalive: true
                     }).catch(function() {});
                 } catch (e) {}
             }
 
-            function payload() {
-                var named = S.who.mode === "named";
+            /* Save each excerpt's response as soon as "Next" is clicked, so data from
+               people who quit early is kept. If it fails, the final submission sends
+               it again and the server skips duplicates. */
+            function saveTrial(t) {
+                post(JSON.stringify({
+                    kind: "trial",
+                    pid: S.pid,
+                    trial: t
+                }));
+            }
+
+            function background() {
+                var tz = "";
+                try {
+                    tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+                } catch (e) {}
                 return {
                     pid: S.pid,
-                    name: named ? S.who.name.trim() : "",
-                    email: named ? S.who.email.trim() : "",
                     age: +S.about.age,
                     gender: S.about.gender,
                     disney_films: S.about.disney,
                     musicals: S.about.musicals,
-                    device: window.matchMedia && window.matchMedia("(pointer: coarse)").matches ? "touch" : "desktop",
-                    trials: S.trials
+                    us_located: S.about.us,
+                    timezone: tz,
+                    device: window.matchMedia && window.matchMedia("(pointer: coarse)").matches ? "touch" : "desktop"
                 };
+            }
+
+            function lotteryInfo() {
+                var entered = S.draw.mode === "yes";
+                return {
+                    lottery: entered,
+                    email: entered ? S.draw.email.trim() : ""
+                };
+            }
+
+            function payload() {
+                return Object.assign(background(), lotteryInfo(), {
+                    trials: S.trials
+                });
             }
 
             function results() {
                 if (S.result) return showResults();
                 stage.innerHTML = '<div class="eyebrow">Almost done</div><h2>Saving your answers…</h2><div class="spin" role="status" aria-label="Saving"></div>';
                 var body = JSON.stringify(payload());
-                try {
-                    localStorage.setItem("songSurveyBackup_" + S.pid, body);
-                } catch (e) {}
-                if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(window.SCRIPT_URL || "")) return failed("The survey isn't connected to its spreadsheet yet.");
+                store(function(ls) {
+                    ls.setItem("songSurveyBackup_" + S.pid, body);
+                });
+                if (!connected()) return failed("The survey isn't connected to its spreadsheet yet.");
                 fetch(window.SCRIPT_URL, {
                         method: "POST",
                         body: body
@@ -1023,9 +995,9 @@
                     })
                     .then(function(res) {
                         S.result = res;
-                        try {
-                            localStorage.removeItem("songSurveyBackup_" + S.pid);
-                        } catch (e) {}
+                        store(function(ls) {
+                            ls.removeItem("songSurveyBackup_" + S.pid);
+                        });
                         showResults();
                     })
                     .catch(function() {
@@ -1043,82 +1015,15 @@
 
             function showResults() {
                 var res = S.result,
-                    me = res.me || {
-                        correct: 0,
-                        avg_s: null
-                    },
-                    named = S.who.mode === "named";
-                var note = !named ? "You took part anonymously, so you are not on the leaderboard. " :
-                    res.duplicate ? "This email has already been used, so this attempt is not on the leaderboard. " : "";
+                    entered = S.draw.mode === "yes";
+                var note = !entered ? "" :
+                    res.duplicate ? "This email address has already been entered, so this attempt doesn't add another entry." :
+                    "You are entered in the lottery. Winners will be notified by email after the survey closes.";
                 stage.innerHTML =
                     '<div class="eyebrow">Survey complete</div>' +
                     '<h2>Thank you for participating.</h2>' +
-                    '<div class="score"><div><span class="small">Named correctly in time</span><b>' + me.correct + ' <span class="small">of ' + FILES.length + '</span></b></div>' +
-                    '<div><span class="small">Average response time</span><b>' + (me.avg_s == null ? "–" : me.avg_s.toFixed(1) + " s") + '</b></div></div>' +
-                    (note ? '<p class="small">' + note + '</p>' : '') +
-                    '<div id="boardBox"></div>';
-                drawBoard();
-            }
-
-            /* The server sends the top N (already ranked) plus this participant's own
-               row. If they're outside the top N, or not listed, their row is pinned
-               below a "…" separator. Sorting only reorders the top rows. */
-            function drawBoard() {
-                var res = S.result;
-                var rows = (res.board || []).map(function(r) {
-                    return { rank: r.rank, name: r.name, n: r.correct, avg: r.avg_s, me: r.me };
-                });
-                var mine = res.me,
-                    pinned = null;
-                if (mine && !rows.some(function(x) { return x.me; })) {
-                    pinned = {
-                        rank: mine.rank,
-                        name: mine.rank ? mine.name : "You (not listed)",
-                        n: mine.correct,
-                        avg: mine.avg_s,
-                        me: true
-                    };
-                }
-                var k = S.sort.key,
-                    dir = S.sort.dir;
-                rows.sort(function(a, b) {
-                    var nul = (a.avg == null) - (b.avg == null);
-                    if (k === "name") return dir * String(a.name).localeCompare(String(b.name));
-                    if (k === "avg") return nul || dir * ((a.avg || 0) - (b.avg || 0)) || (a.rank - b.rank);
-                    return dir === -1 ? a.rank - b.rank : b.rank - a.rank;
-                });
-                function tr(x) {
-                    return '<tr class="' + (x.me ? "me" : "") + '"><td>' + (x.rank || "–") + "</td><td>" + esc(x.name) + '</td><td class="n">' + x.n + '</td><td class="n">' + (x.avg == null ? "–" : x.avg.toFixed(1) + " s") + "</td></tr>";
-                }
-                var trs = rows.map(tr).join("");
-                if (!rows.length && !pinned) trs = '<tr><td colspan="4" class="small">No one is on the leaderboard yet.</td></tr>';
-                if (pinned) {
-                    /* "…" only when ranks are skipped (e.g. top 10, then #14). Not for #11
-                       right after #10, and not for unranked (anonymous/duplicate) rows. */
-                    var last = rows.reduce(function(m, x) { return Math.max(m, x.rank || 0); }, 0);
-                    var gap = pinned.rank && pinned.rank > last + 1;
-                    trs += (gap ? '<tr class="gap" aria-hidden="true"><td colspan="4">…</td></tr>' : "") + tr(pinned);
-                }
-
-                function th(key, label, cls) {
-                    var on = k === key;
-                    return '<th class="' + (cls || "") + '" aria-sort="' + (on ? (dir === 1 ? "ascending" : "descending") : "none") + '"><button type="button" data-sort="' + key + '">' + label + '<span class="ar" aria-hidden="true">' + (on ? (dir === 1 ? "▲" : "▼") : "↕") + "</span></button></th>";
-                }
-                $("boardBox").innerHTML = '<p class="small" style="margin-bottom:8px">Score = number of songs named correctly within the time limit.</p>' +
-                    '<table class="board"><thead><tr><th>#</th>' + th("name", "Name") + th("correct", "Score", "n") + th("avg", "Avg. response time", "n") + "</tr></thead><tbody>" + trs + "</tbody></table>";
-                $("boardBox").querySelectorAll("button[data-sort]").forEach(function(b) {
-                    b.onclick = function() {
-                        var key = b.getAttribute("data-sort");
-                        if (S.sort.key === key) S.sort.dir = -S.sort.dir;
-                        else S.sort = {
-                            key: key,
-                            dir: key === "correct" ? -1 : 1
-                        };
-                        drawBoard();
-                        var nb = $("boardBox").querySelector('button[data-sort="' + key + '"]');
-                        if (nb) nb.focus();
-                    };
-                });
+                    (note ? '<p class="lede">' + note + '</p>' : '') +
+                    '<p class="small">You can close this page.</p>';
             }
 
             /* ---------- shared ---------- */
@@ -1139,7 +1044,9 @@
                 });
             }
 
-            go("welcome");
+            go(store(function(ls) {
+                return ls.getItem(SCREENED_KEY);
+            }) ? "screened" : "welcome");
         })();
     </script>
 </body>

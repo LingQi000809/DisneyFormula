@@ -2,13 +2,14 @@
 // 1. Paste this whole file into Extensions → Apps Script (replace the starter code) and save.
 // 2. Choose "setup" in the function menu and click Run once. It creates the tabs.
 // 3. Deploy → New deployment → Web app (Execute as: Me, Who has access: Anyone).
+//    After editing this file later: Deploy → Manage deployments → Edit → New version.
 
-// Column layout. New columns are only ever added at the end, so running setup()
-// again on an existing Sheet just updates the header row.
-const P_HEAD = ['received_at', 'pid', 'name', 'email', 'duplicate', 'age', 'gender', 'disney_films', 'musicals', 'device', 'correct', 'avg_response_s'];
+// Column layout. Rescore writes by column position, so after changing this,
+// run setup() again and clear old rows that used a different layout.
+const P_HEAD = ['received_at', 'pid', 'status', 'email', 'duplicate', 'lottery', 'age', 'gender', 'disney_films', 'musicals', 'us_located', 'timezone', 'device', 'correct'];
 const T_HEAD = ['received_at', 'pid', 'clip_id', 'position', 'response', 'text', 'response_ms', 'submit_ms', 'replays', 'paste_blocked', 'changed', 'correct'];
-const NAME_MAX = 20;   // max display-name length (keep in sync with maxlength in index.html)
-const P = { pid: 1, name: 2, email: 3, duplicate: 4, correct: 10, avg: 11 };            // 0-based
+const WINNERS = 3;
+const P = { pid: 1, status: 2, email: 3, lottery: 5, correct: 13 };            // 0-based
 const T = { pid: 1, clip: 2, position: 3, response: 4, text: 5, response_ms: 6, submit_ms: 7, correct: 11 };
 
 function setup() {
@@ -21,32 +22,39 @@ function setup() {
   header(tab('Participants'), P_HEAD);
   header(tab('Trials'), T_HEAD);
 
-  // Settings: one name/value pair per row
-  const st = tab('Settings');
-  if (st.getRange('A1').getValue() === '') st.getRange('A1:B1').setValues([['time_limit_s', 20]]);
-  if (st.getRange('A2').getValue() === '') st.getRange('A2:B2').setValues([['leaderboard_top_n', 10]]);
-
   const first = ss.getSheetByName('Sheet1');
   if (first && first.getLastRow() === 0 && ss.getSheets().length > 1) ss.deleteSheet(first);
 }
 
 // Adds a "Survey" menu to the Sheet.
 function onOpen() {
-  SpreadsheetApp.getUi().createMenu('Survey').addItem('Rescore everyone', 'rescore').addToUi();
+  SpreadsheetApp.getUi().createMenu('Survey')
+    .addItem('Rescore everyone', 'rescore')
+    .addItem('Draw ' + WINNERS + ' lottery winners', 'drawWinners')
+    .addToUi();
 }
 
 // The survey page posts:
+//   { kind: "screened", pid, email, age, ... }  when someone doesn't pass the
+//                                  screening questions (no excerpts, no lottery entry);
 //   { kind: "trial", pid, trial }  each time a participant clicks "Next excerpt",
 //                                  so responses are kept even if they quit early;
-//   { pid, name, email, ..., trials }  once at the end. Any trial that didn't
-//                                  arrive earlier is added then (no duplicates),
-//                                  and the participant's score is stored.
+//   { pid, lottery, email, ..., trials }  once at the end. Any trial that didn't
+//                                  arrive earlier is added then (no duplicates).
 function doPost(e) {
   const d = JSON.parse(e.postData.contents);
   const lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
     const now = new Date();
+    // Email is asked before screening, so a screened-out email is on record and
+    // a retry with the same email is caught as a duplicate.
+    const email = d.lottery ? String(d.email || '').trim().toLowerCase() : '';
+    const duplicate = email !== '' && rows_('Participants').some(function (r) { return emailKey_(r[P.email]) === emailKey_(email); });
+    if (d.kind === 'screened') {
+      appendParticipant_(now, d, 'screened_out', email, duplicate, false, '');
+      return json_({ ok: true });
+    }
     const ctx = context_();
     if (d.kind === 'trial') {
       appendTrials_(ctx, now, d.pid, [d.trial]);
@@ -55,53 +63,53 @@ function doPost(e) {
     const trials = d.trials || [];
     appendTrials_(ctx, now, d.pid, trials);
 
-    const email = String(d.email || '').trim().toLowerCase();
-    const duplicate = email !== '' && rows_('Participants').some(function (r) { return String(r[P.email]).toLowerCase() === email; });
-    const s = summarize_(trials.filter(function (t) { return t && isCorrect_(ctx, t); })
-                               .map(function (t) { return Number(t.response_ms); }));
-    const name = String(d.name || '').trim().slice(0, NAME_MAX);   // the page also limits it
-    sheet_('Participants').appendRow([now, d.pid, name, email, duplicate, d.age, d.gender,
-      d.disney_films, d.musicals, d.device || '', s.correct, s.avg === null ? '' : s.avg]);
-
-    const out = board_(ctx, d.pid);
-    out.duplicate = duplicate;
-    return json_(out);
+    // One lottery entry per email, and none for an email that was screened out
+    // before. "Name+tag@" and Gmail dots count as the same address.
+    const correct = trials.filter(function (t) { return t && isCorrect_(ctx, t); }).length;
+    appendParticipant_(now, d, 'complete', email, duplicate, email !== '' && !duplicate, correct);
+    return json_({ ok: true, correct: correct, duplicate: duplicate });
   } finally {
     lock.releaseLock();
   }
 }
 
-// GET returns the leaderboard only: names, scores, times. Never emails.
-function doGet() { return json_(board_(context_(), null)); }
+// GET is only a health check; nothing about participants is exposed.
+function doGet() { return json_({ ok: true }); }
 
-// Everything scoring needs, read once per request.
+function appendParticipant_(now, d, status, email, duplicate, lottery, correct) {
+  sheet_('Participants').appendRow([now, d.pid, status, email, duplicate, lottery, d.age, d.gender,
+    d.disney_films, d.musicals, d.us_located, d.timezone || '', d.device || '', correct]);
+}
+
+function emailKey_(e) {
+  const m = String(e || '').trim().toLowerCase().match(/^([^@+]+)(?:\+[^@]*)?@(.+)$/);
+  if (!m) return String(e || '').trim().toLowerCase();
+  const gmail = m[2] === 'gmail.com' || m[2] === 'googlemail.com';
+  return (gmail ? m[1].replace(/\./g, '') : m[1]) + '@' + (gmail ? 'gmail.com' : m[2]);
+}
+
+// The title key, read once per request.
 function context_() {
-  const st = sheet_('Settings').getRange('A1:B2').getValues();
   const key = {};
   rows_('Key').forEach(function (r) {
     if (r[0] !== '') key[String(r[0]).trim()] = keyVariants_(r.slice(1));
   });
-  return { limitMs: Number(st[0][1]) * 1000, topN: Number(st[1][1]) || 10, key: key, seen: {} };
+  return { key: key, seen: {} };
 }
 
-// A trial scores if the participant chose "title", submitted within the time
-// limit, and the title matches. Results are cached per (clip, answer).
+// A trial is correct if the participant chose "title" and the title matches.
+// Response times are stored separately, so any time cutoff can be applied in
+// the analysis. Results are cached per (clip, answer).
 function isCorrect_(ctx, t) {
-  if (t.response !== 'title' || !(Number(t.submit_ms) <= ctx.limitMs)) return false;
+  if (t.response !== 'title') return false;
   const clip = String(t.clip_id).trim(), text = String(t.text || '');
   const k = clip + '\u0000' + text;
   if (!(k in ctx.seen)) ctx.seen[k] = matches_(text, ctx.key[clip] || []);
   return ctx.seen[k];
 }
 
-function summarize_(correctTimesMs) {
-  const n = correctTimesMs.length;
-  const avg = n ? Math.round(correctTimesMs.reduce(function (a, b) { return a + b; }, 0) / n / 100) / 10 : null;
-  return { correct: n, avg: avg };
-}
-
 // Adds trials for this participant, skipping positions already saved, and
-// stores whether each one scored.
+// stores whether each one is correct.
 function appendTrials_(ctx, now, pid, trials) {
   const have = {};
   rows_('Trials').forEach(function (r) { if (r[T.pid] === pid) have[r[T.position]] = true; });
@@ -116,38 +124,8 @@ function appendTrials_(ctx, now, pid, trials) {
   }
 }
 
-// Leaderboard from the stored scores in Participants only (no rescoring).
-// Returns the top N, plus the requesting participant's own row and rank.
-function board_(ctx, pid) {
-  const all = rows_('Participants').map(function (r, i) {
-    return {
-      pid: r[P.pid], name: r[P.name], order: i,
-      listed: r[P.name] !== '' && r[P.duplicate] !== true,
-      correct: Number(r[P.correct]) || 0,
-      avg_s: r[P.avg] === '' ? null : Number(r[P.avg])
-    };
-  });
-  const ranked = all.filter(function (p) { return p.listed; }).sort(function (a, b) {
-    return (b.correct - a.correct)
-      || ((a.avg_s === null) - (b.avg_s === null))
-      || ((a.avg_s || 0) - (b.avg_s || 0))
-      || (a.order - b.order);                       // earlier finisher wins a full tie
-  });
-  ranked.forEach(function (p, i) { p.rank = i + 1; });
-
-  function row(p) { return { rank: p.rank || null, name: p.name, correct: p.correct, avg_s: p.avg_s, me: p.pid === pid }; }
-  let mine = null;
-  for (let i = all.length - 1; i >= 0; i--) if (all[i].pid === pid) { mine = all[i]; break; }
-  return {
-    board: ranked.slice(0, ctx.topN).map(row),
-    me: mine ? row(mine) : null,
-    total: ranked.length
-  };
-}
-
-// Recalculates every stored score: Trials "correct" and Participants
-// "correct" / "avg_response_s". Run it from the Survey menu after changing
-// the Key tab or the time limit. Done in bulk, so it stays fast.
+// Recalculates Trials "correct" and Participants "correct". Run it from the
+// Survey menu after changing the Key tab.
 function rescore() {
   const lock = LockService.getScriptLock();
   lock.waitLock(30000);
@@ -156,22 +134,38 @@ function rescore() {
     const tSheet = sheet_('Trials'), tRows = rows_('Trials');
     const byPid = {};
     const flags = tRows.map(function (r) {
-      const ok = isCorrect_(ctx, { response: r[T.response], submit_ms: r[T.submit_ms], clip_id: r[T.clip], text: r[T.text] });
-      if (ok) (byPid[r[T.pid]] = byPid[r[T.pid]] || []).push(Number(r[T.response_ms]));
+      const ok = isCorrect_(ctx, { response: r[T.response], clip_id: r[T.clip], text: r[T.text] });
+      if (ok) byPid[r[T.pid]] = (byPid[r[T.pid]] || 0) + 1;
       return [ok];
     });
     if (flags.length) tSheet.getRange(2, T.correct + 1, flags.length, 1).setValues(flags);
 
     const pSheet = sheet_('Participants'), pRows = rows_('Participants');
-    const scores = pRows.map(function (r) {
-      const s = summarize_(byPid[r[P.pid]] || []);
-      return [s.correct, s.avg === null ? '' : s.avg];
-    });
-    if (scores.length) pSheet.getRange(2, P.correct + 1, scores.length, 2).setValues(scores);
+    const scores = pRows.map(function (r) { return [r[P.status] === 'complete' ? (byPid[r[P.pid]] || 0) : '']; });
+    if (scores.length) pSheet.getRange(2, P.correct + 1, scores.length, 1).setValues(scores);
     SpreadsheetApp.getActive().toast('Rescored ' + pRows.length + ' participants.');
   } finally {
     lock.releaseLock();
   }
+}
+
+// Picks WINNERS rows at random among Participants with lottery = TRUE and
+// writes them to a "Winners" tab. To exclude someone (e.g. careless answers),
+// set their lottery cell to FALSE before drawing.
+function drawWinners() {
+  const pool = rows_('Participants').filter(function (r) { return r[P.lottery] === true; });
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const x = pool[i]; pool[i] = pool[j]; pool[j] = x;
+  }
+  const picked = pool.slice(0, WINNERS);
+  const ss = SpreadsheetApp.getActive();
+  const sh = ss.getSheetByName('Winners') || ss.insertSheet('Winners');
+  sh.clear();
+  sh.appendRow(['drawn_at', 'pid', 'email', 'entries_in_pool']);
+  const now = new Date();
+  picked.forEach(function (r) { sh.appendRow([now, r[P.pid], r[P.email], pool.length]); });
+  ss.toast('Drew ' + picked.length + ' of ' + pool.length + ' entries. See the Winners tab.');
 }
 
 // ---------------------------------------------------------------------------

@@ -1,48 +1,123 @@
-Movie,Year,Main Composers,Soundtrack (with Youtube Link),Start_Timestamp,Theme,Animated,Fantasy,"""I Want""",Singer Gender,Is Lead Character(s),Western Setting?,Non-Western Instrumentation in this snippet?,Movie IMDb #views,Youtube soundtrack max #views
-Snow White and the Seven Dwarfs,1937,"Frank Churchill (m), Larry Morey (l); score Leigh Harline, Paul J. Smith",OneSong,2:10,Love,Yes,Yes,No,Male,Yes (co-lead),Yes,No,,
-Snow White and the Seven Dwarfs,1937,"Frank Churchill (m), Larry Morey (l); score Leigh Harline, Paul J. Smith",SomedayMyPrinceWillCome,0:12,Dream / love,Yes,Yes,Yes,Female,Yes,Yes,No,,
-Pinocchio,1940,"Leigh Harline (m), Ned Washington (l); Paul J. Smith",WhenYouWishUponAStar,0:37,Dream / wish,Yes,Yes,Yes,Male,No,Yes,No,,
-Dumbo,1941,"Frank Churchill, Oliver Wallace (m), Ned Washington (l)",BabyMine,1:39,Love (maternal) / loss,Yes,Borderline (talking animals; magic feather is placebo),No,Female,No,Yes,No,,
-Bambi,1942,"Frank Churchill (m), Larry Morey (l); Edward Plumb",LoveIsASong,0:45,Love,Yes,Borderline (talking animals),No,Male,No,Yes,No,,
-The Three Caballeros,1944,"Various; Ary Barroso, Agustín Lara; Ray Gilbert (Eng. l); score Charles Wolcott, Paul J. Smith, Edward Plumb",YouBelongToMyHeart,1:10,Love,Yes,"Borderline (cartoon animals, surreal)",No,Female,No,No,Yes (Latin bolero),,
-The Three Caballeros,1944,"Various; Ary Barroso, Agustín Lara; Ray Gilbert (Eng. l); score Charles Wolcott, Paul J. Smith, Edward Plumb",Baía,2:15,Longing / place,Yes,"Borderline (cartoon animals, surreal)",No,Male,No,No,Yes,,
-The Three Caballeros,1944,"Various; Ary Barroso, Agustín Lara; Ray Gilbert (Eng. l); score Charles Wolcott, Paul J. Smith, Edward Plumb",Mexico,1:28,Place / longing,Yes,"Borderline (cartoon animals, surreal)",No,Male,No,No,No,,
-Make Mine Music,1946,"Various; Charles Wolcott, Ray Gilbert, Bobby Worth, Osvaldo Farrés",TwoSilhouettes,1:05,Love,Yes,Mixed by segment,No,Female,No,Yes,No,,
-Make Mine Music,1946,"Various; Charles Wolcott, Ray Gilbert, Bobby Worth, Osvaldo Farrés",WithoutYou,1:52,Loss,Yes,Mixed by segment,No,Male,No,Yes,No,,
-Fun and Fancy Free,1947,"Various; Bobby Worth, Buddy Kaye, Eliot Daniel (verify per song); score Paul J. Smith, Oliver Wallace",TooGoodToBeTrue,1:20,Love,Yes,Borderline / Y (giant),No,Female,No,Yes,No,,
-Melody Time,1948,"Various; Bobby Worth, Ray Gilbert, Kim Gannon, Walter Kent; Oscar Rasbach",OnceUponAWinterTime,0:55,Love,Yes,Mixed by segment,No,Female,No,Yes,No,,
-Cinderella,1950,"Mack David, Al Hoffman, Jerry Livingston; score Oliver Wallace, Paul J. Smith",ADreamIsAWishYourHeartMakes,2:09,Dream,Yes,Yes,Yes,Female,Yes,Yes,No,,
-Cinderella,1950,"Mack David, Al Hoffman, Jerry Livingston; score Oliver Wallace, Paul J. Smith",SoThisIsLove,4:55,Love,Yes,Yes,No,Female + Male Duet,Yes,Yes,No,,
-Alice in Wonderland,1951,"Sammy Fain (m), Bob Hilliard (l); Oliver Wallace",InAWorldOfMyOwn,1:51,Dream,Yes,Yes,Yes,Female,Yes,Yes,No,,
-Peter Pan,1953,"Sammy Fain (m), Sammy Cahn (l); Oliver Wallace",TheSecondStarToTheRight,1:19,Dream,Yes,Yes,No,Female,No,Yes,No,,
-Peter Pan,1953,"Sammy Fain (m), Sammy Cahn (l); Oliver Wallace",YourMotherAndMine,0:38,Love (maternal) / home,Yes,Yes,No,Female,Yes,Yes,No,,
-Lady and the Tramp,1955,Peggy Lee & Sonny Burke; Oliver Wallace,LaLaLu,0:52,Love (maternal),Yes,Borderline (talking animals),No,Female,No,Yes,No,,
-The Jungle Book,1967,Richard M. & Robert B. Sherman; Terry Gilkyson; George Bruns,MyOwnHome,0:09,Home / love,Yes,Borderline (talking animals),No,Female,No,No,No,,
-Robin Hood,1973,Roger Miller; Floyd Huddleston; George Bruns,Love,1:32,Love,Yes,Borderline (anthropomorphic animals),No,Female,No,Yes,No,,
-The Rescuers,1977,"Sammy Fain, Carol Connors, Ayn Robbins; Artie Butler",SomeonesWaitingForYou,1:36,Hope / comfort,Yes,Borderline (talking animals),No,Female,No,Yes,No,,
-The Little Mermaid,1989,"Alan Menken (m), Howard Ashman (l)",PartOfYourWorldReprise,1:37,Love / longing,Yes,Yes,Yes,Female,Yes,Yes,No,,
-Beauty and the Beast,1991,"Alan Menken (m), Howard Ashman (l)",BelleReprise,0:37,Dream,Yes,Yes,Yes,Female,Yes,Yes,No,,
-Beauty and the Beast,1991,"Alan Menken (m), Howard Ashman (l)",SomethingThere,1:36,Love,Yes,Yes,No,Female + Male Duet,Yes,Yes,No,,
-Beauty and the Beast,1991,"Alan Menken (m), Howard Ashman (l)",BeautyAndTheBeast,1:32,Love,Yes,Yes,No,Female,No,Yes,No,,
-Aladdin,1992,"Alan Menken (m), Howard Ashman & Tim Rice (l)",OneJumpAheadReprise,0:29,Dream / self-worth,Yes,Yes,Yes,Male,Yes,No,No,,
-Pocahontas,1995,"Alan Menken (m), Stephen Schwartz (l)",JustAroundTheRiverbend,1:56,Dream / choice,Yes,"Borderline (spirit tree, wind magic)",Yes,Female,Yes,Ambiguous,No,,
-Pocahontas,1995,"Alan Menken (m), Stephen Schwartz (l)",ColorsOfTheWind,2:08,Self/worldview,Yes,"Borderline (spirit tree, wind magic)",No,Female,Yes,Ambiguous,No,,
-Pocahontas,1995,"Alan Menken (m), Stephen Schwartz (l)",IfINeverKnewYou,1:06,Love / loss,Yes,"Borderline (spirit tree, wind magic)",No,Male + Female Duet,Yes,Ambiguous,No,,
-The Hunchback of Notre Dame,1996,"Alan Menken (m), Stephen Schwartz (l)",OutThere,3:26,Dream / freedom,Yes,Borderline (talking gargoyles),Yes,Male,Yes,Yes,No,,
-The Hunchback of Notre Dame,1996,"Alan Menken (m), Stephen Schwartz (l)",GodHelpTheOutcasts,1:14,Compassion / faith,Yes,Borderline (talking gargoyles),No,Female,Yes (co-lead),Yes,No,,
-The Hunchback of Notre Dame,1996,"Alan Menken (m), Stephen Schwartz (l)",HeavensLight,1:03,Love / hope,Yes,Borderline (talking gargoyles),No,Male,Yes,Yes,No,,
-Hercules,1997,"Alan Menken (m), David Zippel (l)",GoTheDistance,2:29,Dream / belonging,Yes,Yes,Yes,Male,Yes,Yes,No,,
-Mulan,1998,"Matthew Wilder (m), David Zippel (l); Jerry Goldsmith",Reflection,0:53,Identity / self-realization,Yes,"Borderline (ancestor spirits, dragon)",Yes,Female,Yes,No,No,,
-Brother Bear,2003,Phil Collins & Mark Mancina,NoWayOut,1:17,Guilt / loss,Yes,Yes (spirit transformation),No,Male,No,No,No,,
-Home on the Range,2004,"Alan Menken (m), Glenn Slater (l)",WillTheSunEverShineAgain,1:38,Loss / hope,Yes,Borderline (talking animals),No,Female,No,Yes,No (country/Americana),,
-The Princess and the Frog,2009,Randy Newman,DownInNewOrleansPrologue,0:00,Place,Yes,Yes,No,Female,Yes,Yes,No,,
-Tangled,2010,"Alan Menken (m), Glenn Slater (l)",HealingIncantation,0:21,Magic / healing,Yes,Yes,No,Female,Yes,Yes,No,,
-Tangled,2010,"Alan Menken (m), Glenn Slater (l)",ISeeTheLight,1:07,Love / dream fulfilled,Yes,Yes,No,Female + Male Duet,Yes,Yes,No,,
-Frozen,2013,Kristen Anderson-Lopez & Robert Lopez; Christophe Beck,DoYouWantToBuildASnowman,2:32,Loneliness / loss,Yes,Yes,No,Female,Yes,Yes,No,,
-Frozen,2013,Kristen Anderson-Lopez & Robert Lopez; Christophe Beck,ForTheFirstTimeInForever,"1:55, 2:34",Dream / fear,Yes,Yes,Yes,Female,Yes,Yes,No,,
-Moana,2016,"Lin-Manuel Miranda, Opetaia Foa'i, Mark Mancina",HowFarIllGoReprise,1:05,Determination,Yes,Yes,Yes,Female,Yes,No,No,,
-Moana,2016,"Lin-Manuel Miranda, Opetaia Foa'i, Mark Mancina",IAmMoana,1:58,Self-realization,Yes,Yes,No,Female,Yes,No,"Yes (Pacific choir, log drums)",,
-Frozen II,2019,Kristen Anderson-Lopez & Robert Lopez; Christophe Beck,AllIsFound,1:09,Love (maternal) / memory,Yes,Yes,No,Female,No,Yes,No,,
-Encanto,2021,Lin-Manuel Miranda; Germaine Franco,WaitingOnAMiracle,2:01,Dream / belonging,Yes,Yes (magic realism),Yes,Female,Yes,Ambiguous (Latin America),No,,
-Wish,2023,Julia Michaels & Benjamin Rice; Dave Metzger,ThisWish,2:27,Hope / defiance,Yes,Yes,No,Mixed chorus,Yes,Yes,No,,
-Moana 2,2024,"Abigail Barlow & Emily Bear; Mark Mancina, Opetaia Foa'i",Beyond,2:10,Calling / identity,Yes,Yes,Yes,Female,Yes,No,Partial (choir),,
+Origin,Film/Musical,Year,Main Composers,Soundtrack (with Youtube Link),Start_Timestamp,Theme,Animated,Fantasy,"""I Want""",Singer Gender,Is Lead Character(s),Western Setting?,Non-Western Instrumentation in this snippet?,Movie IMDb #views,Youtube soundtrack max #views,
+Disney,Snow White and the Seven Dwarfs,1937,"Frank Churchill (m), Larry Morey (l); score Leigh Harline, Paul J. Smith",OneSong,2:10,Love,Yes,Yes,No,Male,Yes (co-lead),Yes,No,,,
+,Snow White and the Seven Dwarfs,1937,"Frank Churchill (m), Larry Morey (l); score Leigh Harline, Paul J. Smith",SomedayMyPrinceWillCome,0:12,Dream / love,Yes,Yes,Yes,Female,Yes,Yes,No,,,
+,Pinocchio,1940,"Leigh Harline (m), Ned Washington (l); Paul J. Smith",WhenYouWishUponAStar,0:37,Dream / wish,Yes,Yes,Yes,Male,No,Yes,No,,,
+,Dumbo,1941,"Frank Churchill, Oliver Wallace (m), Ned Washington (l)",BabyMine,1:39,Love (maternal) / loss,Yes,Borderline (talking animals; magic feather is placebo),No,Female,No,Yes,No,,,
+,Bambi,1942,"Frank Churchill (m), Larry Morey (l); Edward Plumb",LoveIsASong,0:45,Love,Yes,Borderline (talking animals),No,Male,No,Yes,No,,,
+,The Three Caballeros,1944,"Various; Ary Barroso, Agustín Lara; Ray Gilbert (Eng. l); score Charles Wolcott, Paul J. Smith, Edward Plumb",YouBelongToMyHeart,1:10,Love,Yes,"Borderline (cartoon animals, surreal)",No,Female,No,No,Yes (Latin bolero),,,
+,The Three Caballeros,1944,"Various; Ary Barroso, Agustín Lara; Ray Gilbert (Eng. l); score Charles Wolcott, Paul J. Smith, Edward Plumb",Baía,2:15,Longing / place,Yes,"Borderline (cartoon animals, surreal)",No,Male,No,No,Yes,,,
+,The Three Caballeros,1944,"Various; Ary Barroso, Agustín Lara; Ray Gilbert (Eng. l); score Charles Wolcott, Paul J. Smith, Edward Plumb",Mexico,1:28,Place / longing,Yes,"Borderline (cartoon animals, surreal)",No,Male,No,No,No,,,
+,Make Mine Music,1946,"Various; Charles Wolcott, Ray Gilbert, Bobby Worth, Osvaldo Farrés",TwoSilhouettes,1:05,Love,Yes,Mixed by segment,No,Female,No,Yes,No,,,
+,Make Mine Music,1946,"Various; Charles Wolcott, Ray Gilbert, Bobby Worth, Osvaldo Farrés",WithoutYou,1:52,Loss,Yes,Mixed by segment,No,Male,No,Yes,No,,,
+,Fun and Fancy Free,1947,"Various; Bobby Worth, Buddy Kaye, Eliot Daniel (verify per song); score Paul J. Smith, Oliver Wallace",TooGoodToBeTrue,1:20,Love,Yes,Borderline / Y (giant),No,Female,No,Yes,No,,,
+,Melody Time,1948,"Various; Bobby Worth, Ray Gilbert, Kim Gannon, Walter Kent; Oscar Rasbach",OnceUponAWinterTime,0:55,Love,Yes,Mixed by segment,No,Female,No,Yes,No,,,
+,Cinderella,1950,"Mack David, Al Hoffman, Jerry Livingston; score Oliver Wallace, Paul J. Smith",ADreamIsAWishYourHeartMakes,2:09,Dream,Yes,Yes,Yes,Female,Yes,Yes,No,,,
+,Cinderella,1950,"Mack David, Al Hoffman, Jerry Livingston; score Oliver Wallace, Paul J. Smith",SoThisIsLove,4:55,Love,Yes,Yes,No,Female + Male Duet,Yes,Yes,No,,,
+,Alice in Wonderland,1951,"Sammy Fain (m), Bob Hilliard (l); Oliver Wallace",InAWorldOfMyOwn,1:51,Dream,Yes,Yes,Yes,Female,Yes,Yes,No,,,
+,Peter Pan,1953,"Sammy Fain (m), Sammy Cahn (l); Oliver Wallace",TheSecondStarToTheRight,1:19,Dream,Yes,Yes,No,Female,No,Yes,No,,,
+,Peter Pan,1953,"Sammy Fain (m), Sammy Cahn (l); Oliver Wallace",YourMotherAndMine,0:38,Love (maternal) / home,Yes,Yes,No,Female,Yes,Yes,No,,,
+,Lady and the Tramp,1955,Peggy Lee & Sonny Burke; Oliver Wallace,LaLaLu,0:52,Love (maternal),Yes,Borderline (talking animals),No,Female,No,Yes,No,,,
+,The Jungle Book,1967,Richard M. & Robert B. Sherman; Terry Gilkyson; George Bruns,MyOwnHome,0:09,Home / love,Yes,Borderline (talking animals),No,Female,No,No,No,,,
+,Robin Hood,1973,Roger Miller; Floyd Huddleston; George Bruns,Love,1:32,Love,Yes,Borderline (anthropomorphic animals),No,Female,No,Yes,No,,,
+,The Rescuers,1977,"Sammy Fain, Carol Connors, Ayn Robbins; Artie Butler",SomeonesWaitingForYou,1:36,Hope / comfort,Yes,Borderline (talking animals),No,Female,No,Yes,No,,,
+,The Little Mermaid,1989,"Alan Menken (m), Howard Ashman (l)",PartOfYourWorldReprise,1:37,Love / longing,Yes,Yes,Yes,Female,Yes,Yes,No,,,
+,Beauty and the Beast,1991,"Alan Menken (m), Howard Ashman (l)",BelleReprise,0:37,Dream,Yes,Yes,Yes,Female,Yes,Yes,No,,,
+,Beauty and the Beast,1991,"Alan Menken (m), Howard Ashman (l)",SomethingThere,1:36,Love,Yes,Yes,No,Female + Male Duet,Yes,Yes,No,,,
+,Beauty and the Beast,1991,"Alan Menken (m), Howard Ashman (l)",BeautyAndTheBeast,1:32,Love,Yes,Yes,No,Female,No,Yes,No,,,
+,Aladdin,1992,"Alan Menken (m), Howard Ashman & Tim Rice (l)",OneJumpAheadReprise,0:29,Dream / self-worth,Yes,Yes,Yes,Male,Yes,No,No,,,
+,Pocahontas,1995,"Alan Menken (m), Stephen Schwartz (l)",JustAroundTheRiverbend,1:56,Dream / choice,Yes,"Borderline (spirit tree, wind magic)",Yes,Female,Yes,Ambiguous,No,,,
+,Pocahontas,1995,"Alan Menken (m), Stephen Schwartz (l)",ColorsOfTheWind,2:08,Self/worldview,Yes,"Borderline (spirit tree, wind magic)",No,Female,Yes,Ambiguous,No,,,
+,Pocahontas,1995,"Alan Menken (m), Stephen Schwartz (l)",IfINeverKnewYou,1:06,Love / loss,Yes,"Borderline (spirit tree, wind magic)",No,Male + Female Duet,Yes,Ambiguous,No,,,
+,The Hunchback of Notre Dame,1996,"Alan Menken (m), Stephen Schwartz (l)",OutThere,3:26,Dream / freedom,Yes,Borderline (talking gargoyles),Yes,Male,Yes,Yes,No,,,
+,The Hunchback of Notre Dame,1996,"Alan Menken (m), Stephen Schwartz (l)",GodHelpTheOutcasts,1:14,Compassion / faith,Yes,Borderline (talking gargoyles),No,Female,Yes (co-lead),Yes,No,,,
+,The Hunchback of Notre Dame,1996,"Alan Menken (m), Stephen Schwartz (l)",HeavensLight,1:03,Love / hope,Yes,Borderline (talking gargoyles),No,Male,Yes,Yes,No,,,
+,Hercules,1997,"Alan Menken (m), David Zippel (l)",GoTheDistance,2:29,Dream / belonging,Yes,Yes,Yes,Male,Yes,Yes,No,,,
+,Mulan,1998,"Matthew Wilder (m), David Zippel (l); Jerry Goldsmith",Reflection,0:53,Identity / self-realization,Yes,"Borderline (ancestor spirits, dragon)",Yes,Female,Yes,No,No,,,
+,Brother Bear,2003,Phil Collins & Mark Mancina,NoWayOut,1:17,Guilt / loss,Yes,Yes (spirit transformation),No,Male,No,No,No,,,
+,Home on the Range,2004,"Alan Menken (m), Glenn Slater (l)",WillTheSunEverShineAgain,1:38,Loss / hope,Yes,Borderline (talking animals),No,Female,No,Yes,No (country/Americana),,,
+,The Princess and the Frog,2009,Randy Newman,DownInNewOrleansPrologue,0:00,Place,Yes,Yes,No,Female,Yes,Yes,No,,,
+,Tangled,2010,"Alan Menken (m), Glenn Slater (l)",HealingIncantation,0:21,Magic / healing,Yes,Yes,No,Female,Yes,Yes,No,,,
+,Tangled,2010,"Alan Menken (m), Glenn Slater (l)",ISeeTheLight,1:07,Love / dream fulfilled,Yes,Yes,No,Female + Male Duet,Yes,Yes,No,,,
+,Frozen,2013,Kristen Anderson-Lopez & Robert Lopez; Christophe Beck,DoYouWantToBuildASnowman,2:32,Loneliness / loss,Yes,Yes,No,Female,Yes,Yes,No,,,
+,Frozen,2013,Kristen Anderson-Lopez & Robert Lopez; Christophe Beck,ForTheFirstTimeInForever,"1:55, 2:34",Dream / fear,Yes,Yes,Yes,Female,Yes,Yes,No,,,
+,Moana,2016,"Lin-Manuel Miranda, Opetaia Foa'i, Mark Mancina",HowFarIllGoReprise,1:05,Determination,Yes,Yes,Yes,Female,Yes,No,No,,,
+,Moana,2016,"Lin-Manuel Miranda, Opetaia Foa'i, Mark Mancina",IAmMoana,1:58,Self-realization,Yes,Yes,No,Female,Yes,No,"Yes (Pacific choir, log drums)",,,
+,Frozen II,2019,Kristen Anderson-Lopez & Robert Lopez; Christophe Beck,AllIsFound,1:09,Love (maternal) / memory,Yes,Yes,No,Female,No,Yes,No,,,
+,Encanto,2021,Lin-Manuel Miranda; Germaine Franco,WaitingOnAMiracle,2:01,Dream / belonging,Yes,Yes (magic realism),Yes,Female,Yes,Ambiguous (Latin America),No,,,
+,Wish,2023,Julia Michaels & Benjamin Rice; Dave Metzger,ThisWish,2:27,Hope / defiance,Yes,Yes,No,Mixed chorus,Yes,Yes,No,,,
+,Moana 2,2024,"Abigail Barlow & Emily Bear; Mark Mancina, Opetaia Foa'i",Beyond,2:10,Calling / identity,Yes,Yes,Yes,Female,Yes,No,Partial (choir),,,
+Musical,Roberta,1933,"Jerome Kern (m), Otto Harbach (l)",SmokeGetsInYourEyes,1:19,Love / loss,No,No,No,Female,Yes (leading lady),Yes (Paris),,,,
+,Jumbo,1935,"Richard Rodgers (m), Lorenz Hart (l)",MyRomance,1:13,Love,No,No,No,Female,Yes,Yes,,,,
+,Right This Way,1938,"Sammy Fain (m), Irving Kahal (l)",IllBeSeeingYou,2:10,Longing,No,No,Yes (longing for an absent lover),Female,Yes,Yes,,,,
+,Gulliver's Travels,1939,"Ralph Rainger (m), Leo Robin (l)",Faithful,0:37,Love,Yes,"Yes
+Prince(ss)",No,Female,Yes,"Yes (fictional, European-styled)",,,,RIVAL: Paramount commissioned it to answer Disney's Snow White (1937) and asked the Fleischers to emulate Disney's realistic style
+,Gulliver's Travels,1939,"Ralph Rainger (m), Leo Robin (l)",Forever,0:36,Love,Yes,"Yes
+Prince(ss)",No,Male,Yes,"Yes (fictional, European-styled)",,,,RIVAL: Paramount commissioned it to answer Disney's Snow White (1937) and asked the Fleischers to emulate Disney's realistic style
+,Pal Joey,1940,"Richard Rodgers (m), Lorenz Hart (l)",BewitchedBotheredAndBewildered,1:49,Love,No,No,No,Female,Yes (co-lead Vera),Yes (Chicago),,,,
+,Lady in the Dark,1941,"Kurt Weill (m), Ira Gershwin (l)",MyShip,1:19,Longing / love,No,No,Yes (waiting for true love),Female,Yes (Liza),Yes (NYC),,,,
+,Meet Me in St. Louis,1944,Hugh Martin & Ralph Blane,TheBoyNextDoor,1:42,Love / longing,No,No,Yes,Female,Yes,Yes,,,,
+,Carousel,1945,"Richard Rodgers (m), Oscar Hammerstein II (l)",IfILovedYou,3:40,Love,No,Borderline (Act 2 afterlife),No,Male,Yes,Yes,,,,
+,Brigadoon,1947,"Frederick Loewe (m), Alan Jay Lerner (l)",FromThisDayOn,0:53,Love / loss,No,Yes (village appears once a century),No,Male,Yes,Yes (Scotland),,,,
+,South Pacific,1949,"Richard Rodgers (m), Oscar Hammerstein II (l)",SomeEnchantedEvening,1:25,Love,No,No,No,Male,Yes,"Ambiguous (South Pacific island, Western characters)",,,,
+,Calamity Jane,1953,"Sammy Fain (m), Paul Francis Webster (l)",SecretLove,2:02,Love,No,No,No,Female,Yes,Yes (Old West),,,,INFLUENCE: Fain had just written songs for Disney's Alice in Wonderland (1951) & Peter Pan (1953)
+,Plain and Fancy,1955,"Albert Hague (m), Arnold B. Horwitt (l)",YoungAndFoolish,1:06,Love,No,No,No,Male,Yes,Yes (Amish Pennsylvania),,,,
+,The Music Man,1957,Meredith Willson,TillThereWasYou,1:15,Love,No,No,No,Female,Yes (Marian),Yes (Iowa),,,,
+,West Side Story,1957,"Leonard Bernstein (m), Stephen Sondheim (l)",OneHandOneHeart,0:31,Love,No,No,No,Male,Yes,Yes,,,,
+,Camelot,1960,"Frederick Loewe (m), Alan Jay Lerner (l)",ILovedYouOnceInSilence,0:22,Love / loss,No,"Yes (Merlin, Morgan le Fay)",No,Female,Yes (co-lead),Yes,,,,
+,The Fantasticks,1960,"Harvey Schmidt (m), Tom Jones (l)",MuchMore,1:32,Dream / longing,No,No,Yes,Female,Yes,Yes,,,,
+,Pickwick,1963,"Cyril Ornadel (m), Leslie Bricusse (l)",IfIRuledTheWorld,1:54,Dream / wish,No,No,Yes (wish),Male,Yes (Pickwick),Yes (England),,,,
+,Charlotte's Web,1973,Richard M. & Robert B. Sherman,MotherEarthAndFatherTime,1:05,Life / time,Yes,Borderline (talking animals),No,Female,Yes (co-lead),Yes,,,,"INFLUENCE: songwriters Richard and Robert Sherman, musical director Irwin Kostal, and directors Charles A. Nichols and Iwao Takamoto had worked at Disney"
+,A Chorus Line,1975,"Marvin Hamlisch (m), Edward Kleban (l)",WhatIDidForLove,1:49,Devotion / self,No,No,No,Female,Yes (Diana),Yes (NYC),,,,
+,The Wiz,1975,Charlie Smalls,Home,0:51,Self-realization / longing,No,Yes (Oz),Yes,Female,Yes,Yes (Oz),,,,
+,"God Bless You, Mr. Rosewater",1979,"Alan Menken (m), Howard Ashman (l)",DearOphelia,1:56,Love / self-realization,No,No,Borderline (declares his new calling),Male,Yes,Yes (Indiana),,,,"REVERSE: Menken & Ashman's first show, before Disney; the same team later created the Disney Renaissance sound"
+,Little Shop of Horrors,1982,"Alan Menken (m), Howard Ashman (l)",SomewhereThatsGreen,2:57,Dream,No,Yes (alien plant),Yes,Female,Yes,Yes,,,,REVERSE: Disney hired Menken & Ashman for The Little Mermaid on the strength of this show; Audrey's I Want song predates Ariel's
+,Song and Dance,1982,"Andrew Lloyd Webber (m), Don Black (l)",UnexpectedSong,0:46,Love,No,No,No,Female,"Yes (Emma, only character)",Ambiguous (London / USA),,,,
+,The Last Unicorn,1982,Jimmy Webb,NowThatImAWoman,1:22,Self-realization / change,Yes,Yes,No,Female,Yes,Yes (fairy-tale),,,,
+,Les Misérables,1985,"Claude-Michel Schönberg (m), Herbert Kretzmer (l)",IDreamedADream,3:45,Loss / dream,No,No,No,Female,Yes (principal),Yes (France),,,,
+,The Phantom of the Opera,1986,"Andrew Lloyd Webber (m), Charles Hart (l)",AllIAskOfYou,2:03,Love,No,Borderline (no magic),No,Male + Female Duet,Yes,Yes (Paris),,,,
+,The Phantom of the Opera,1986,"Andrew Lloyd Webber (m), Charles Hart (l)",WishingYouWereSomehowHereAgain,1:35,Loss / grief,No,Borderline (no magic),No,Female,Yes,Yes (Paris),,,,
+,Miss Saigon,1989,"Claude-Michel Schönberg (m), Richard Maltby Jr. & Alain Boublil (l)",SunAndMoon,2:21,Love,No,No,No,Female,Yes,No (Vietnam),,,,
+,Once on This Island,1990,"Stephen Flaherty (m), Lynn Ahrens (l)",WaitingForLife,2:30,Dream,No,Yes (gods),Yes,Female,Yes,No (Caribbean),,,,
+,Once on This Island,1990,"Stephen Flaherty (m), Lynn Ahrens (l)",ForeverYours,1:00,Love / devotion,No,Yes (gods),No,Mixed,Yes (Ti Moune),No (Caribbean),,,,
+,The Thief and the Cobbler (1993 cut),1993,Robert Folk,AmIFeelingLove,0:40,Love,Yes,"Yes
+Princess",No,Female,Yes (Princess Yum-Yum),No (Arabian city),,,,"RIVAL / IMITATION: after Williams was removed, Fred Calvert recut it and added songs to make it as close to Aladdin as possible
+In 1995, Disney-owned Miramax Family Films released a heavily recut U.S. version titled Arabian Knight"
+,Thumbelina,1994,Barry Manilow,LetMeBeYourWings,0:48,Love,Yes,"Yes
+Princess",No,Female + Male Duet,Yes,Yes,,,,RIVAL: director Don Bluth is ex-Disney; historian Jim Korkis notes his films mostly follow the Disney formula in visuals and subject matter
+,Thumbelina,1994,Barry Manilow,Soon,1:10,Dream / love,Yes,"Yes
+Princess",Yes,Female,Yes,Yes,,,,
+,The Swan Princess,1994,"Lex de Azevedo (m), David Zippel (l)",FarLongerThanForever,2:02,Love,Yes,"Yes
+Princess",No,Female + Male Duet,Yes,Yes,,,,"RIVAL: ex-Disney director Richard Rich (Fox and the Hound, Black Cauldron), inspired by the Disney Renaissance; Variety: it wears 'the same accoutrements as recent Disney fare'"
+,A Christmas Carol,1994,"Alan Menken (m), Lynn Ahrens (l)",APlaceCalledHome,0:37,Love / home,No,Yes,No,Male + Female Duet,Yes,Yes,,,,"INFLUENCE: Menken was already Disney's composer (Little Mermaid, Beauty and the Beast, Aladdin)"
+,Anastasia,1997,"Stephen Flaherty (m), Lynn Ahrens (l)",JourneyToThePast,1:10,Dream / identity,Yes,"Yes
+Princess",Yes,Female,Yes,Yes,,,,RIVAL: Fox Animation Studios was designed to compete with Disney; ex-Disney directors Bluth & Goldman; critics noted it leaned heavily into the Disney animated musical paradigm
+,Jekyll & Hyde,1997,"Frank Wildhorn (m), Leslie Bricusse (l)",ThisIsTheMoment,1:31,Ambition / self,No,Yes (transformation),Yes,Male,Yes,Yes (London),,,,
+,Jekyll & Hyde,1997,"Frank Wildhorn (m), Leslie Bricusse (l)",OnceUponADream,1:57,Love,No,Yes (transformation),No,Female,Yes (co-lead),Yes (London),,,,
+,The Scarlet Pimpernel,1997,"Frank Wildhorn (m), Nan Knighton (l)",WhenILookAtYou,1:34,Love / loss,No,No,No,Female,Yes (Marguerite),Yes (England),,,,
+,Quest for Camelot,1998,"David Foster (m), Carole Bayer Sager (l)",OnMyFathersWings,2:06,Dream,Yes,Yes,Yes,Female,Yes,Yes,,,,"RIVAL: Warner Bros.' first fully animated feature, made to take on Disney; Variety: it 'doesn't stray very far from the Disney formula'; division led by ex-Disney exec Max Howard"
+,Ragtime,1998,"Stephen Flaherty (m), Lynn Ahrens (l)",BackToBefore,1:41,Self-realization,No,No,No,Female,Yes,Yes,,,,
+,Wicked,2003,Stephen Schwartz,ImNotThatGirl,1:23,Love / loss,No,Yes,No,Female,Yes,Yes (Oz),,,,INFLUENCE: Schwartz had written lyrics for Disney's Pocahontas (1995) & Hunchback (1996)
+,Barbie as the Princess and the Pauper,2004,"Megan Cavallari (m), Amy Powers (l)",Free,2:39,Dream / freedom,Yes,"Yes
+Princess",Yes,Female Duet,Yes,Yes (fairy-tale Europe),,,,Composer is a fan of Menken 
+,Barbie as the Princess and the Pauper,2004,"Megan Cavallari (m), Amy Powers (l)",IfYouLoveMeForMe,0:51,Love,Yes,"Yes
+Princess",No,Female + Male Duet,Yes,Yes (fairy-tale Europe),,,,
+,A Little Princess,2004,"Andrew Lippa (m), Brian Crawley (l)",LiveOutLoud,1:03,Self-expression / defiance,No,"No
+Princess (in spirit only)",Yes,Female,Yes (Sara),Yes (London),,,,
+,The Light in the Piazza,2005,Adam Guettel,TheLightInThePiazza,0:34,Love,No,No,No,Female,Yes,Yes (Florence),,,,
+,Barbie as the Island Princess,2007,"Megan Cavallari (m), Amy Powers & Rob Hudnut (l)",INeedToKnow,1:46,Identity / longing,Yes,"Yes
+Princess",Yes,Female + Male Duet,Yes,Ambiguous (fictional island),,,,Composer is a fan of Menken
+,The Book of Mormon,2011,"Robert Lopez, Trey Parker & Matt Stone",SalTlayKaSiti,2:22,Dream,No,No,Yes,Female,Yes,No (Uganda),,,,INFLUENCE: composer Lopez had Disney credits from 2007 (Finding Nemo – The Musical)
+,If/Then,2014,"Tom Kitt (m), Brian Yorkey (l)",AlwaysStartingOver,3:02,Self-realization / resolve,No,Borderline (parallel timelines),Yes,Female,Yes (Elizabeth),Yes (NYC),,,,Sung by Idina Menzel (Elsa) — performer link only
+,Allegiance,2015,Jay Kuo,Higher,1:15,Dream / freedom,No,No,Yes,Female,"Yes (Kei, co-lead)",Yes (US internment camp),,,,Sung by Lea Salonga (singing voice of Disney's Jasmine & Mulan) — performer link only
+,Hamilton,2015,Lin-Manuel Miranda,Burn,1:56,Loss,No,No,No,Female,Yes,Yes,,,,INFLUENCE: composer Miranda was already writing Moana
+,"Natasha, Pierre & The Great Comet of 1812",2016,Dave Malloy,DustAndAshes,2:30,Despair / longing,No,No,Yes (longing for meaning),Male,Yes,Yes (Moscow),,,,
+,"Natasha, Pierre & The Great Comet of 1812",2016,Dave Malloy,NoOneElse,2:19,Love / longing,No,No,Yes (longing for her absent fiancé),Female,Yes (Natasha),Yes (Moscow),,,,
+,Bright Star,2016,Steve Martin & Edie Brickell,WayBackInTheDay,0:44,Memory / longing,No,No,Yes,Female,Yes (Alice Murphy),Yes (North Carolina),,,,"Steve Martin worked at Disneyland as a teen and acted in Touchstone (Disney) films — a connection, not evidence of style"
+,Maybe Happy Ending,2016,"Will Aronson (m), Hue Park (l)",MaybeHappyEnding,1:08,Love / farewell,No,Borderline (sci-fi robots),No,Male,Yes (Oliver & Claire),No (Seoul),,,,
+,The Greatest Showman,2017,Benj Pasek & Justin Paul,Tightrope,2:37,Love / devotion,No,No,No,Female,"Yes (Charity, co-lead)",Yes (USA),,,,
+,The Prom,2018,"Matthew Sklar (m), Chad Beguelin (l)",UnrulyHeart,1:36,Self-acceptance,No,No,Yes,Female,Yes (Emma),Yes (Indiana),,,,INFLUENCE: lyricist Beguelin wrote the book & additional lyrics for Disney's Aladdin on Broadway (2014)
+,Hadestown,2019,Anaïs Mitchell,AllIveEverKnown,1:00,Love,No,"Yes (Greek myth, underworld)",No,Female + Male Duet,Yes,Yes (Greek myth),,,,
+,Over the Moon,2020,"Christopher Curtis, Marjorie Duffield & Helen Park",RocketToTheMoon,2:36,Dream,Yes,Yes,Yes,Female,Yes,No (China),,,,"INFLUENCE: director Glen Keane is ex-Disney (lead animator on Ariel, the Beast, Pocahontas)"
+,The Great Gatsby,2023,"Jason Howland (m), Nathan Tysen (l)",ForHer,2:55,Love / longing,No,No,Yes,Male,Yes (Gatsby),Yes (Long Island),,,,Gatsby sung by Jeremy Jordan (Disney's Newsies on Broadway) — performer link only
+,Hazbin Hotel,2024,Sam Haber & Andrew Underberg,MoreThanAnything,1:30,Love / protection (father–daughter),Yes,"Yes (Hell, fallen angel)
+Princess",Yes,Male + Female Duet,"Yes (Charlie, with her father Lucifer)",Ambiguous (Hell),,,,Lucifer sung by Jeremy Jordan (Disney's Newsies on Broadway) — performer link only
