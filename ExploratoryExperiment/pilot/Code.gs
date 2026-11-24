@@ -6,10 +6,10 @@
 
 // Column layout. Rescore writes by column position, so after changing this,
 // run setup() again and clear old rows that used a different layout.
-const P_HEAD = ['received_at', 'pid', 'status', 'email', 'duplicate', 'lottery', 'age', 'gender', 'disney_films', 'musicals', 'us_located', 'timezone', 'device', 'correct'];
+const P_HEAD = ['received_at', 'pid', 'status', 'email', 'duplicate', 'raffle', 'age', 'gender', 'disney_films', 'musicals', 'us_located', 'timezone', 'device', 'correct'];
 const T_HEAD = ['received_at', 'pid', 'clip_id', 'position', 'response', 'text', 'response_ms', 'submit_ms', 'replays', 'paste_blocked', 'changed', 'correct'];
 const WINNERS = 3;
-const P = { pid: 1, status: 2, email: 3, lottery: 5, correct: 13 };            // 0-based
+const P = { pid: 1, status: 2, email: 3, raffle: 5, correct: 13 };            // 0-based
 const T = { pid: 1, clip: 2, position: 3, response: 4, text: 5, response_ms: 6, submit_ms: 7, correct: 11 };
 
 function setup() {
@@ -30,44 +30,39 @@ function setup() {
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('Survey')
     .addItem('Rescore everyone', 'rescore')
-    .addItem('Draw ' + WINNERS + ' lottery winners', 'drawWinners')
+    .addItem('Draw ' + WINNERS + ' raffle winners', 'drawWinners')
     .addToUi();
 }
 
 // The survey page posts:
 //   { kind: "screened", pid, email, age, ... }  when someone doesn't pass the
-//                                  screening questions (no excerpts, no lottery entry);
-//   { kind: "trial", pid, trial }  each time a participant clicks "Next excerpt",
-//                                  so responses are kept even if they quit early;
-//   { pid, lottery, email, ..., trials }  once at the end. Any trial that didn't
-//                                  arrive earlier is added then (no duplicates).
+//                                  screening questions (no excerpts, no raffle entry);
+//   { kind: "trial", pid, trial }  each time a participant clicks "Next excerpt".
+//                                  This is the only time a trial is saved;
+//   { pid, raffle, email, ... }    once at the end (background + raffle, no trials).
 function doPost(e) {
   const d = JSON.parse(e.postData.contents);
   const lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
     const now = new Date();
+    if (d.kind === 'trial') {
+      appendTrials_(context_(), now, d.pid, [d.trial]);
+      return json_({ ok: true });
+    }
     // Email is asked before screening, so a screened-out email is on record and
     // a retry with the same email is caught as a duplicate.
-    const email = d.lottery ? String(d.email || '').trim().toLowerCase() : '';
+    const email = d.raffle ? String(d.email || '').trim().toLowerCase() : '';
     const duplicate = email !== '' && rows_('Participants').some(function (r) { return emailKey_(r[P.email]) === emailKey_(email); });
     if (d.kind === 'screened') {
       appendParticipant_(now, d, 'screened_out', email, duplicate, false, '');
       return json_({ ok: true });
     }
-    const ctx = context_();
-    if (d.kind === 'trial') {
-      appendTrials_(ctx, now, d.pid, [d.trial]);
-      return json_({ ok: true });
-    }
-    const trials = d.trials || [];
-    appendTrials_(ctx, now, d.pid, trials);
-
-    // One lottery entry per email, and none for an email that was screened out
+    // One raffle entry per email, and none for an email that was screened out
     // before. "Name+tag@" and Gmail dots count as the same address.
-    const correct = trials.filter(function (t) { return t && isCorrect_(ctx, t); }).length;
-    appendParticipant_(now, d, 'complete', email, duplicate, email !== '' && !duplicate, correct);
-    return json_({ ok: true, correct: correct, duplicate: duplicate });
+    // The "correct" total is filled in by Survey → Rescore everyone.
+    appendParticipant_(now, d, 'complete', email, duplicate, email !== '' && !duplicate, '');
+    return json_({ ok: true, duplicate: duplicate });
   } finally {
     lock.releaseLock();
   }
@@ -76,8 +71,8 @@ function doPost(e) {
 // GET is only a health check; nothing about participants is exposed.
 function doGet() { return json_({ ok: true }); }
 
-function appendParticipant_(now, d, status, email, duplicate, lottery, correct) {
-  sheet_('Participants').appendRow([now, d.pid, status, email, duplicate, lottery, d.age, d.gender,
+function appendParticipant_(now, d, status, email, duplicate, raffle, correct) {
+  sheet_('Participants').appendRow([now, d.pid, status, email, duplicate, raffle, d.age, d.gender,
     d.disney_films, d.musicals, d.us_located, d.timezone || '', d.device || '', correct]);
 }
 
@@ -108,13 +103,10 @@ function isCorrect_(ctx, t) {
   return ctx.seen[k];
 }
 
-// Adds trials for this participant, skipping positions already saved, and
-// stores whether each one is correct.
+// Appends trials and stores whether each one is correct. Nothing is read from
+// the Trials tab, so saving stays fast however many rows it has.
 function appendTrials_(ctx, now, pid, trials) {
-  const have = {};
-  rows_('Trials').forEach(function (r) { if (r[T.pid] === pid) have[r[T.position]] = true; });
-  const rows = trials.filter(function (t) { return t && !have[t.position]; }).map(function (t) {
-    have[t.position] = true;
+  const rows = trials.filter(function (t) { return t; }).map(function (t) {
     return [now, pid, t.clip_id, t.position, t.response, t.text || '', t.response_ms, t.submit_ms,
       t.replays, t.paste_blocked, t.changed, isCorrect_(ctx, t)];
   });
@@ -149,11 +141,11 @@ function rescore() {
   }
 }
 
-// Picks WINNERS rows at random among Participants with lottery = TRUE and
+// Picks WINNERS rows at random among Participants with raffle = TRUE and
 // writes them to a "Winners" tab. To exclude someone (e.g. careless answers),
-// set their lottery cell to FALSE before drawing.
+// set their raffle cell to FALSE before drawing.
 function drawWinners() {
-  const pool = rows_('Participants').filter(function (r) { return r[P.lottery] === true; });
+  const pool = rows_('Participants').filter(function (r) { return r[P.raffle] === true; });
   for (let i = pool.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     const x = pool[i]; pool[i] = pool[j]; pool[j] = x;
