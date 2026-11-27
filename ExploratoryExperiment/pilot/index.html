@@ -729,7 +729,7 @@
                 stage.innerHTML =
                     '<div class="eyebrow">About ' + EST_MINUTES + ' minutes · ' + FILES.length + ' excerpts</div>' +
                     '<h2>Song Recognition Survey</h2>' +
-                    '<p class="lede">Thank you for taking part. I am selecting songs for an upcoming music study and need to know which songs are widely recognized.</p>' +
+                    '<p class="lede">Thank you for taking part! I\'m selecting music for an upcoming experiment, and your responses will help me identify which songs are widely recognized so I can exclude them from the main study.</p>' +
                     '<ul class="rules">' +
                     '<li><span class="k">1</span><span><b>Listen and answer.</b>For each 8-second excerpt, tell me whether you know the song.</span></li>' +
                     '<li><span class="k">2</span><span><b>Respond based on your first impression.</b>You may answer while the excerpt is still playing.</span></li>' +
@@ -853,7 +853,7 @@
                         return opt("resp", r.v, r.t, "", false, true);
                     }).join("") + '</div>' +
                     '<div class="field" id="box-title" hidden><label for="f-title">Song title <span class="req">*</span></label><input type="text" id="f-title" autocomplete="off" spellcheck="false"></div>' +
-                    '<div class="field" id="box-recall" hidden><label for="f-recall">What clues can you remember? <span class="req">*</span></label><span class="hint">For example, the film or musical it comes from, the singer, or a lyric.</span><input type="text" id="f-recall" autocomplete="off"></div>' +
+                    '<div class="field" id="box-recall" hidden><label for="f-recall">What clues can you remember? <span class="req">*</span></label><span class="hint">For example, the film or musical it comes from, the singer, the composer, etc.</span><input type="text" id="f-recall" autocomplete="off"></div>' +
                     '<p class="flag" id="flag" hidden></p>' +
                     '<div class="actions"><span></span><button class="btn" id="next" type="button" disabled>' + (k + 1 === FILES.length ? "Submit" : "Next excerpt") + '</button></div>';
                 var ti = $("f-title"),
