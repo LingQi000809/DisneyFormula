@@ -736,9 +736,9 @@
                     '<li><span class="k">3</span><span><b>Answer honestly.</b>Please don\'t look anything up, use song-identification apps, or ask anyone nearby. Your answers don\'t affect your chances in the raffle, and an honest "no" is just as useful to me as a "yes."</span></li>' +
                     '</ul>' +
                     '<div class="prize"><span class="ico" aria-hidden="true">' + GIFT + '</span>' +
-                    '<strong>Raffle: three $10 prizes</strong>' +
-                    '<p>Each prize is $10 in cash or a gift card. Everyone who completes the survey can enter. You can sign up with your email address on the next page. One entry per person.</p>' +
-                    '<p>Three winners are drawn at random after the survey closes and notified by email.</p></div>' +
+                    '<strong>Raffle: $25 prize</strong>' +
+                    '<p>Participants who complete the survey can enter a raffle for $25 (cash or gift card). You can opt in with your email address on the next page.</p>' +
+                    '<p>Each person can enter once. After the survey closes, one participant will be selected at random and contacted by email.</p></div>' +
                     (FILES.length ? "" : '<p class="err">No excerpts are set up yet (clips.js is empty).</p>') +
                     '<div class="actions"><span></span><button class="btn" id="next" type="button"' + (FILES.length ? "" : " disabled") + '>Begin</button></div>';
                 $("next").onclick = function() {
@@ -962,12 +962,12 @@
                 stage.innerHTML =
                     '<div class="eyebrow">Before you begin</div>' +
                     '<h2>Would you like to enter the raffle?</h2>' +
-                    '<p class="lede">Three participants who complete the survey will be drawn at random to win $10 in cash or a gift card. Your answers don\'t affect your chances.</p>' +
+                    '<p class="lede">Participants who complete the survey can enter a raffle for $25 (cash or gift card). Your answers don\'t affect your chances.</p>' +
                     '<div class="opts" role="radiogroup" aria-label="Raffle">' +
                     opt("draw", "yes", "Yes, enter me in the raffle", "", w.mode === "yes") +
                     opt("draw", "no", "No, thanks", "", w.mode === "no") +
                     '</div>' +
-                    '<div class="field" id="emBox"' + (w.mode === "yes" ? "" : " hidden") + '><label for="f-email">Email address <span class="req">*</span></label><span class="hint">Used only to contact the winners. One entry per person; repeat entries with the same email don\'t count.</span><input type="email" id="f-email" autocomplete="email" value="' + esc(w.email) + '"><span class="err" id="emErr" hidden>Please enter a valid email address.</span></div>' +
+                    '<div class="field" id="emBox"' + (w.mode === "yes" ? "" : " hidden") + '><label for="f-email">Email address <span class="req">*</span></label><span class="hint">Used only to contact the selected participant. One entry per person; repeat entries with the same email don\'t count.</span><input type="email" id="f-email" autocomplete="email" value="' + esc(w.email) + '"><span class="err" id="emErr" hidden>Please enter a valid email address.</span></div>' +
                     '<div class="actions"><button class="btn ghost" type="button" id="back">Back</button><button class="btn" id="next" type="button">Continue</button></div>';
                 var em = $("f-email");
 
@@ -1145,7 +1145,7 @@
                     res.duplicate ? '<p class="lede">This email address has already been entered, so this attempt doesn\'t add another entry.</p>' :
                     '<div class="prize short"><span class="ico" aria-hidden="true">' + GIFT + '</span>' +
                     '<strong>You are entered in the raffle</strong>' +
-                    '<p>Thank you for completing the survey. You will be considered for one of three $10 prizes (cash or gift card). Winners are drawn at random after the survey closes and notified by email.</p></div>';
+                    '<p>Thank you for completing the survey. You will be considered for the $25 prize (cash or gift card). After the survey closes, one participant will be selected at random and contacted by email.</p></div>';
                 stage.innerHTML =
                     '<div class="eyebrow">Survey complete</div>' +
                     '<h2>Thank you for participating.</h2>' +

@@ -8,7 +8,7 @@
 // run setup() again and clear old rows that used a different layout.
 const P_HEAD = ['received_at', 'pid', 'status', 'email', 'duplicate', 'raffle', 'age', 'gender', 'disney_films', 'musicals', 'us_located', 'timezone', 'device', 'correct'];
 const T_HEAD = ['received_at', 'pid', 'clip_id', 'position', 'response', 'text', 'response_ms', 'submit_ms', 'replays', 'paste_blocked', 'changed', 'correct'];
-const WINNERS = 3;
+const WINNERS = 1;
 const P = { pid: 1, status: 2, email: 3, raffle: 5, correct: 13 };            // 0-based
 const T = { pid: 1, clip: 2, position: 3, response: 4, text: 5, response_ms: 6, submit_ms: 7, correct: 11 };
 
@@ -30,7 +30,7 @@ function setup() {
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('Survey')
     .addItem('Rescore everyone', 'rescore')
-    .addItem('Draw ' + WINNERS + ' raffle winners', 'drawWinners')
+    .addItem('Draw raffle winner' + (WINNERS > 1 ? 's' : ''), 'drawWinners')
     .addToUi();
 }
 
